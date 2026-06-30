@@ -8,7 +8,7 @@
 
   >>> THE ONE THING YOU MUST EDIT <<<
   Replace every occurrence of:
-        https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform
+        https://thomasolearycolemans-sys.github.io/plainform/taskpane.html
   with the public https address where you host taskpane.html.
   (e.g. your CodeSandbox / StackBlitz / GitHub Pages URL.)
   There are 4 spots: SourceLocation, two icon URLs, and AppDomains.
@@ -33,12 +33,12 @@
   <Description DefaultValue="Plain-language editing to the Australian Government Style Manual."/>
 
   <!-- Icon shown in the add-ins list. -->
-  <IconUrl DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform/icon-64.png"/>
+  <IconUrl DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/taskpane.html/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/taskpane.html/icon-64.png"/>
 
   <!-- Domains the add-in is allowed to load from. -->
   <AppDomains>
-    <AppDomain>https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform</AppDomain>
+    <AppDomain>https://thomasolearycolemans-sys.github.io/plainform/taskpane.html</AppDomain>
   </AppDomains>
 
   <Hosts>
@@ -47,7 +47,7 @@
 
   <DefaultSettings>
     <!-- The page Word opens in the task pane: THIS is the pointer to our HTML. -->
-    <SourceLocation DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform/taskpane.html"/>
+    <SourceLocation DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/taskpane.html/taskpane.html"/>
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
@@ -97,14 +97,14 @@
     <Resources>
       <bt:Images>
         <!-- EDIT these three icon URLs too (same host as above). -->
-        <bt:Image id="Icon.16" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform/icon-32.png"/>
-        <bt:Image id="Icon.32" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform/icon-32.png"/>
-        <bt:Image id="Icon.80" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform/icon-64.png"/>
+        <bt:Image id="Icon.16" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/taskpane.html/icon-32.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/taskpane.html/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/taskpane.html/icon-64.png"/>
       </bt:Images>
       <bt:Urls>
         <!-- EDIT this taskpane URL to match SourceLocation above. -->
-        <bt:Url id="Taskpane.Url" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform/taskpane.html"/>
-        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/https://thomasolearycolemans-sys.github.io/plainform/taskpane.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/taskpane.html/taskpane.html"/>
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://thomasolearycolemans-sys.github.io/plainform/taskpane.html/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Plainform is ready"/>
