@@ -80,20 +80,42 @@ const DocumentAdapter = (function () {
   async function markup(markList, withComments) {
     // Highlights first — the widely-supported, must-always-work part.
     await Word.run(async (context) => {
-      const byText = {};
-      markList.forEach(mk => { (byText[mk.from] = byText[mk.from] || []).push(mk); });
       clearHighlightsIn(context.document.body);
+
+      // Group by the text we actually HIGHLIGHT (full sentence for sentence
+      // flags; the word/phrase otherwise). Each group remembers its colour and
+      // a fallback string for when a long search fails.
+      const groups = {};
+      markList.forEach(mk => {
+        const ht = mk.highlightText || mk.from;
+        const key = ht;
+        (groups[key] = groups[key] || { text: ht, kind: mk.kind, marks: [], fallback: mk.from }).marks.push(mk);
+      });
+
       const searches = [];
-      Object.keys(byText).forEach(text => {
-        const r = context.document.body.search(text, { matchCase: true, matchWholeWord: true });
-        r.load('items');
-        searches.push({ text, results: r });
+      Object.keys(groups).forEach(key => {
+        const g = groups[key];
+        // Word search caps around 255 chars and matchWholeWord fails on strings
+        // containing punctuation, so for long/sentence text we search plainly
+        // and trim to a safe length.
+        const isLong = g.text.length > 120;
+        const term = isLong ? g.text.slice(0, 200) : g.text;
+        const opts = isLong ? {} : { matchCase: true, matchWholeWord: true };
+        let r;
+        try { r = context.document.body.search(term, opts); r.load('items'); }
+        catch (e) { r = null; }
+        searches.push({ g, results: r });
       });
       await context.sync();
-      searches.forEach(({ text, results }) => {
-        byText[text].forEach(mk => {
-          if (mk.occurrence < results.items.length) {
-            results.items[mk.occurrence].font.highlightColor = HL[mk.kind] || HL.flag;
+
+      searches.forEach(({ g, results }) => {
+        if (!results) return;
+        // For a full-sentence highlight there's one match per occurrence order;
+        // colour each mark's occurrence-th hit.
+        g.marks.forEach(mk => {
+          const idx = mk.occurrence < results.items.length ? mk.occurrence : 0;
+          if (results.items.length > idx) {
+            results.items[idx].font.highlightColor = HL[mk.kind] || HL.flag;
           }
         });
       });
@@ -333,7 +355,7 @@ const Engine = (function () {
 
     // flags collected separately so they can carry an explanation (#2)
     const flags = []; // {from, occurrence, kind:'flag', subtype, note, start, end}
-    function addFlag(text, start, end, subtype, note) {
+    function addFlag(text, start, end, subtype, note, highlightText) {
       if (spanTaken(start, end) && subtype !== 'sentence') return;
       const occ = occForText(text, start);
       const TITLE = { sentence:'Long sentence', passive:'Passive voice', doublneg:'Double negative',
@@ -341,17 +363,22 @@ const Engine = (function () {
       const title = TITLE[subtype] || 'Check';
       const cleanNote = (note && note.toLowerCase().indexOf(title.toLowerCase()) === 0) ? '' : note;
       const mk = { from: text, occurrence: occ, kind: 'flag', subtype, note, start, end,
-                   explain: title + (cleanNote ? ': ' + cleanNote : '.') };
+                   explain: title + (cleanNote ? ': ' + cleanNote : '.'),
+                   // what to HIGHLIGHT in the doc (defaults to `from`; for long
+                   // sentences this is the whole sentence so the mark isn't a stub)
+                   highlightText: highlightText || text };
       marks.push(mk); flags.push(mk);
     }
 
-    // long sentences
+    // long sentences — highlight the WHOLE sentence, but show a short lead in the sidebar
     let sentRe = /[^.!?]+[.!?]+/g, sm;
     while ((sm = sentRe.exec(rawText)) !== null) {
-      const words = sm[0].trim().split(/\s+/).filter(Boolean).length;
+      const whole = sm[0].trim();
+      const words = whole.split(/\s+/).filter(Boolean).length;
       if (words > 25) {
-        const lead = sm[0].trim().split(/\s+/).slice(0, 6).join(' ');
-        addFlag(lead, sm.index, sm.index + lead.length, 'sentence', words + ' words (AGSM suggests ~25 max).');
+        const lead = whole.split(/\s+/).slice(0, 6).join(' ');
+        addFlag(lead, sm.index, sm.index + whole.length, 'sentence',
+                words + ' words (AGSM suggests ~25 max).', whole);
       }
     }
     // passive voice
