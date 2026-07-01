@@ -79,14 +79,11 @@ const DocumentAdapter = (function () {
   // a Word comment carrying the issue + recommended change, so hovering/clicking
   // the word in the document shows the explanation in Word's own bubble.
   async function markup(markList, withComments) {
-    return Word.run(async (context) => {
+    // Underlines first — this is the widely-supported, must-always-work part.
+    await Word.run(async (context) => {
       const byText = {};
       markList.forEach(mk => { (byText[mk.from] = byText[mk.from] || []).push(mk); });
-
-      // clear prior Plainform marks (underlines + our own comments) first
       clearUnderlinesIn(context.document.body);
-      await deletePlainformComments(context);
-
       const searches = [];
       Object.keys(byText).forEach(text => {
         const r = context.document.body.search(text, { matchCase: true, matchWholeWord: true });
@@ -94,21 +91,56 @@ const DocumentAdapter = (function () {
         searches.push({ text, results: r });
       });
       await context.sync();
-
       searches.forEach(({ text, results }) => {
         byText[text].forEach(mk => {
           if (mk.occurrence < results.items.length) {
             const range = results.items[mk.occurrence];
             range.font.underline = ULSTYLE[mk.kind] || 'Dotted';
             range.font.underlineColor = UL[mk.kind] || UL.flag;
-            if (withComments && mk.explain) {
-              try { range.insertComment(COMMENT_TAG + mk.explain); } catch (e) { /* older builds: skip */ }
-            }
           }
         });
       });
       await context.sync();
     });
+
+    // Comments second, in a SEPARATE, fully-guarded pass. The comment APIs
+    // (getComments / insertComment / contentRange) are newer and may be missing;
+    // if anything here fails it must NOT affect the underlines above or the
+    // sidebar. So we swallow errors and simply skip comments on older builds.
+    if (!withComments) return;
+    if (!isCommentsApiAvailable()) return;
+    try {
+      await Word.run(async (context) => {
+        await deletePlainformComments(context);
+        const byText = {};
+        markList.forEach(mk => { if (mk.explain) (byText[mk.from] = byText[mk.from] || []).push(mk); });
+        const searches = [];
+        Object.keys(byText).forEach(text => {
+          const r = context.document.body.search(text, { matchCase: true, matchWholeWord: true });
+          r.load('items');
+          searches.push({ text, results: r });
+        });
+        await context.sync();
+        searches.forEach(({ text, results }) => {
+          byText[text].forEach(mk => {
+            if (mk.occurrence < results.items.length && mk.explain) {
+              try { results.items[mk.occurrence].insertComment(COMMENT_TAG + mk.explain); } catch (e) {}
+            }
+          });
+        });
+        await context.sync();
+      });
+    } catch (e) {
+      console.error('comments pass skipped:', e);
+    }
+  }
+
+  // Feature-detect the comments API so we never even attempt it where missing.
+  function isCommentsApiAvailable() {
+    try {
+      return !!(Office && Office.context && Office.context.requirements &&
+                Office.context.requirements.isSetSupported('WordApi', '1.4'));
+    } catch (e) { return false; }
   }
 
   function clearUnderlinesIn(body) {
@@ -116,27 +148,34 @@ const DocumentAdapter = (function () {
     body.font.highlightColor = null;   // also clears any leftover highlight from older versions
   }
 
-  // Delete only the comments Plainform created (identified by our prefix),
-  // leaving the user's own comments untouched.
+  // Delete only Plainform's own comments (by our prefix). Guarded: if the
+  // comments API is unavailable, do nothing rather than throw.
   async function deletePlainformComments(context) {
-    const comments = context.document.body.getComments();
-    comments.load('items');
-    await context.sync();
-    const texts = comments.items.map(c => { c.contentRange.load('text'); return c; });
-    await context.sync();
-    let removed = false;
-    comments.items.forEach(c => {
-      const t = c.contentRange.text || '';
-      if (t.indexOf(COMMENT_TAG) === 0) { c.delete(); removed = true; }
-    });
-    if (removed) await context.sync();
+    if (!isCommentsApiAvailable()) return;
+    let comments;
+    try {
+      comments = context.document.body.getComments();
+      comments.load('items');
+      await context.sync();
+    } catch (e) { return; }
+    try {
+      comments.items.forEach(c => c.contentRange.load('text'));
+      await context.sync();
+      let removed = false;
+      comments.items.forEach(c => {
+        const t = (c.contentRange && c.contentRange.text) || '';
+        if (t.indexOf(COMMENT_TAG) === 0) { c.delete(); removed = true; }
+      });
+      if (removed) await context.sync();
+    } catch (e) { /* leave comments alone if we can't read them */ }
   }
 
   async function clearMarks() {
-    return Word.run(async (context) => {
-      clearUnderlinesIn(context.document.body);
-      await deletePlainformComments(context);
-    });
+    // Underlines always clear; comment clearing is separate and guarded.
+    await Word.run(async (context) => { clearUnderlinesIn(context.document.body); await context.sync(); });
+    if (isCommentsApiAvailable()) {
+      try { await Word.run(async (context) => { await deletePlainformComments(context); }); } catch (e) {}
+    }
   }
 
   // Read just the user's current selection (used by the AI review, so only the
@@ -165,7 +204,7 @@ const DocumentAdapter = (function () {
     });
   }
 
-  return { getText, onChange, replace, markup, clearMarks, getSelectionText, replaceSelection };
+  return { getText, onChange, replace, markup, clearMarks, getSelectionText, replaceSelection, commentsSupported: isCommentsApiAvailable };
 })();
 
 
@@ -405,7 +444,7 @@ const CopilotModule = (function () {
   // >>> EDIT THIS to your Cloudflare Worker URL (see the setup guide). <<<
   // While it still contains 'REPLACE', the module runs in safe DEMO mode
   // and never makes a network call.
-  const RELAY_URL = "https://plainform-relay.thomas-oleary-coleman-s.workers.dev/review";
+  const RELAY_URL = 'https://REPLACE-WITH-YOUR-WORKER.workers.dev/review';
 
   let ENABLED = false;   // mirrors the toggle; the controller sets this explicitly
   function setEnabled(on) { ENABLED = !!on; }
@@ -487,17 +526,30 @@ function startPlainform() {
     if (scanning) return;
     scanning = true;
     setStatus('scanning', 'Scanning…');
+    let res;
     try {
       const text = await DocumentAdapter.getText();
-      const res = Engine.analyse(text, ignoreSet);
+      res = Engine.analyse(text, ignoreSet);
       lastResult = res;
-      await DocumentAdapter.markup(res.marks, commentsOn());
-      renderSuggestions(res.suggestions);
-      renderFlags(res.flags);
     } catch (e) {
       setStatus('', 'Could not read the document. Try Scan now.');
-      console.error(e);
-    } finally { scanning = false; }
+      console.error('getText/analyse failed:', e);
+      scanning = false;
+      return;
+    }
+    // Render the sidebar FIRST. This must never be blocked by document marking —
+    // if highlighting or comments fail (unsupported Word build), the suggestions
+    // and flags still appear. This ordering is the core regression fix.
+    renderSuggestions(res.suggestions);
+    renderFlags(res.flags);
+    // Then mark the document. Wrapped so any marking failure is non-fatal.
+    try {
+      await DocumentAdapter.markup(res.marks, commentsOn());
+    } catch (e) {
+      console.error('markup failed (sidebar still shown):', e);
+      setStatus('found', res.suggestions.length + ' in sidebar; document marks unavailable in this Word version.');
+    }
+    scanning = false;
   }
 
   /* ---------- suggestions (swaps + spelling) ---------- */
@@ -675,7 +727,14 @@ function startPlainform() {
     else { clearTimeout(debounceTimer); ctlHint.textContent = 'Automatic scanning off. Use Scan now.'; setStatus('', 'Automatic scanning is off.'); }
   });
   scanBtn.addEventListener('click', scan);
-  if (commentsToggle) commentsToggle.addEventListener('change', () => { scan(); });
+  if (commentsToggle) commentsToggle.addEventListener('change', () => {
+    if (commentsToggle.checked && DocumentAdapter.commentsSupported && !DocumentAdapter.commentsSupported()) {
+      // Honest feedback: this Word build can't add comments, so the hover
+      // explanations won't appear. Underlines and the sidebar still work.
+      setStatus('', 'Hover explanations need a newer Word version — underlines and the sidebar still work.');
+    }
+    scan();
+  });
 
   /* ---------- AI assistant (Copilot) — off by default, opt-in to enable ----------
      The toggle starts OFF. Turning it on shows a consent notice first; only an
