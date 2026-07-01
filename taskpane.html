@@ -87,11 +87,6 @@
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
 
   .scroll { flex: 1; overflow-y: auto; }
-  /* Backstop: #editorPanel must be a flex container for .scroll above to get
-     a bounded, scrollable height (otherwise content grows forever and pushes
-     the footer off-screen). taskpane.js sets this inline too; this rule is
-     just insurance in case that ever doesn't run. */
-  #editorPanel[style*="flex"], #aiPanel[style*="flex"] { display: flex; }
 
   .applyall-bar { padding: 9px 16px; border-bottom: 1px solid var(--rule); display: flex; }
   .applyall { font-family: var(--sans); font-size: 12.5px; font-weight: 600; padding: 8px 14px; border-radius: 7px;
@@ -197,7 +192,6 @@
 
   <div class="tabs-row" id="tabsRow" role="tablist" style="display:none">
     <button class="tab" id="tabEditor" role="tab" aria-selected="true">Editor</button>
-    <button class="tab" id="tabAI" role="tab" aria-selected="false">AI</button>
     <button class="tab" id="tabHelp" role="tab" aria-selected="false">Help</button>
   </div>
 
@@ -222,6 +216,22 @@
           <span class="switch"><input type="checkbox" id="commentsToggle"><span class="track"></span><span class="knob"></span></span>
           <span>Show explanations on words</span>
         </label>
+      </div>
+      <div class="ctl-row2">
+        <label class="toggle">
+          <span class="switch"><input type="checkbox" id="aiToggle"><span class="track"></span><span class="knob"></span></span>
+          <span>AI assistant (Gemini)</span>
+        </label>
+      </div>
+      <div class="ai-consent" id="aiConsent" style="display:none">
+        <p><b>Turn on AI assistant?</b></p>
+        <p>This sends the passage you choose to review to <b>Google Gemini</b> (via your relay).
+           Your text leaves the offline tool. Plainform sends nothing unless this is on
+           and you click review on a passage.</p>
+        <div class="consent-acts">
+          <button class="mini" id="aiConsentNo">Cancel</button>
+          <button class="mini apply" id="aiConsentYes">Continue</button>
+        </div>
       </div>
       <div class="btn-row">
         <button class="hl-btn" id="clearHlBtn">Clear marks</button>
@@ -255,33 +265,9 @@
         <ul class="flag-list" id="flagList"></ul>
       </div>
 
-    </div>
-  </div>
-
-  <div id="aiPanel" style="display:none; flex:1; min-height:0; flex-direction:column;">
-    <div class="scroll">
-      <div class="controls" style="border-bottom:1px solid var(--rule)">
-        <div class="ctl-row2" style="margin-top:0">
-          <label class="toggle">
-            <span class="switch"><input type="checkbox" id="aiToggle"><span class="track"></span><span class="knob"></span></span>
-            <span>AI assistant (Gemini)</span>
-          </label>
-        </div>
-        <p class="ctl-hint">Off by default. Select a paragraph in your document, turn this on, then ask for a review — only that passage is ever sent, and only when you click.</p>
-        <div class="ai-consent" id="aiConsent" style="display:none">
-          <p><b>Turn on AI assistant?</b></p>
-          <p>This sends the passage you choose to review to <b>Google Gemini</b> (via your relay).
-             Your text leaves the offline tool. Plainform sends nothing unless this is on
-             and you click review on a passage.</p>
-          <div class="consent-acts">
-            <button class="mini" id="aiConsentNo">Cancel</button>
-            <button class="mini apply" id="aiConsentYes">Continue</button>
-          </div>
-        </div>
-      </div>
       <div class="ai-section" id="aiSection" style="display:none">
         <div class="ai-head">AI assistant
-          <span class="sub">On-demand rewrites from Google Gemini, aware of the issues Plainform already found in your selection.</span>
+          <span class="sub">On-demand rewrites from Google Gemini. Sends only the passage you choose.</span>
         </div>
         <div class="ai-controls">
           <button class="ai-review" id="aiReviewBtn">Ask AI to review selection</button>
@@ -323,9 +309,8 @@
     <p>Use <b>Clear marks</b> to remove the highlights and Plainform’s comments at any time.</p>
 
     <h3>AI assistant (Gemini)</h3>
-    <p class="note">Open the <b>AI</b> tab at the top to use this. <b>Off by default.</b> Plainform is
-       offline and sends nothing anywhere — <i>unless</i> you turn on the AI assistant <b>and</b>
-       click review on a passage. Turning it on
+    <p class="note"><b>Off by default.</b> Plainform is offline and sends nothing anywhere —
+       <i>unless</i> you turn on the AI assistant <b>and</b> click review on a passage. Turning it on
        asks you to confirm first. When on, only the paragraph you select is sent to Google Gemini
        (through your own relay, which holds the key) — never the whole document, and never as you type.
        Turn it off and nothing can be sent. <b>Note:</b> Google’s free tier may use submitted text to
