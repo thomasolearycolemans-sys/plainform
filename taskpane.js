@@ -1,951 +1,362 @@
-/* ====================================================================
- *  Plainform for Word — taskpane.js  (v2: features #1,#2,#12,#15,#16,#17 + Help)
- * ==================================================================== */
-
-const ENGINE_DATA = {"verbForms":{"acquire":["acquire","acquires","acquired","acquiring"],"ascertain":["ascertain","ascertains","ascertained","ascertaining"],"assist":["assist","assists","assisted","assisting"],"attempt":["attempt","attempts","attempted","attempting"],"cease":["cease","ceases","ceased","ceasing"],"commence":["commence","commences","commenced","commencing"],"disburse":["disburse","disburses","disbursed","disbursing"],"discontinue":["discontinue","discontinues","discontinued","discontinuing"],"dispatch":["dispatch","dispatches","dispatched","dispatching"],"exit":["exit","exits","exited","exiting"],"impact":["impact","impacts","impacted","impacting"],"implement":["implement","implements","implemented","implementing"],"inquire":["inquire","inquires","inquired","inquiring"],"leverage":["leverage","leverages","leveraged","leveraging"],"obtain":["obtain","obtains","obtained","obtaining"],"require":["require","requires","required","requiring"],"utilise":["utilise","utilises","utilised","utilising"],"desire":["desire","desires","desired","desiring"],"table":["table","tables","tabled","tabling"]},"replForms":{"acquire":{"buy":["buy","buys","bought","buying"],"get":["get","gets","got","getting"]},"ascertain":{"find out":["find out","finds out","found out","finding out"]},"assist":{"help":["help","helps","helped","helping"],"support":["support","supports","supported","supporting"],"guide":["guide","guides","guided","guiding"]},"attempt":{"try":["try","tries","tried","trying"]},"cease":{"stop":["stop","stops","stopped","stopping"],"end":["end","ends","ended","ending"]},"commence":{"start":["start","starts","started","starting"],"begin":["begin","begins","began","beginning"]},"disburse":{"pay":["pay","pays","paid","paying"]},"discontinue":{"stop":["stop","stops","stopped","stopping"],"end":["end","ends","ended","ending"]},"dispatch":{"send":["send","sends","sent","sending"]},"exit":{"leave":["leave","leaves","left","leaving"]},"impact":{"affect":["affect","affects","affected","affecting"]},"implement":{"apply":["apply","applies","applied","applying"],"install":["install","installs","installed","installing"],"do":["do","does","did","doing"],"start":["start","starts","started","starting"]},"inquire":{"ask":["ask","asks","asked","asking"]},"leverage":{"use":["use","uses","used","using"],"build on":["build on","builds on","built on","building on"]},"obtain":{"get":["get","gets","got","getting"],"have":["have","has","had","having"]},"require":{"need":["need","needs","needed","needing"],"must":["must","must","must","must"]},"utilise":{"use":["use","uses","used","using"]},"desire":{"want":["want","wants","wanted","wanting"]},"table":{"address":["address","addresses","addressed","addressing"],"discuss":["discuss","discusses","discussed","discussing"],"release":["release","releases","released","releasing"]}},"entries":[{"id":"sub_acquire","match":"acquire","match_type":"word","replacements":["buy","get"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_additional","match":"additional","match_type":"word","replacements":["more","extra"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_adequate_number_of","match":"adequate number of","match_type":"phrase","replacements":["enough"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_advising_in_relation_to","match":"advising in relation to","match_type":"phrase","replacements":["advising on","advising about"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_amongst","match":"amongst","match_type":"word","replacements":["among"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_a_number_of","match":"a number of","match_type":"phrase","replacements":["some","many","few"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_approximately","match":"approximately","match_type":"word","replacements":["about"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_as_a_consequence_of","match":"as a consequence of","match_type":"phrase","replacements":["because"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_ascertain","match":"ascertain","match_type":"word","replacements":["find out"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_assist","match":"assist","match_type":"word","replacements":["help","support","guide"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_at_a_later_date","match":"at a later date","match_type":"phrase","replacements":["later","soon"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_at_this_point_in_time","match":"at this point in time","match_type":"phrase","replacements":["now"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_cease","match":"cease","match_type":"word","replacements":["stop","end"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_cognisant_of","match":"cognisant of","match_type":"phrase","replacements":["aware of","know"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_collaborate_with","match":"collaborate with","match_type":"phrase","replacements":["work with"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_commence","match":"commence","match_type":"word","replacements":["start","begin"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_concerning","match":"concerning","match_type":"word","replacements":["about"],"morphology":"as_is","sense_guard":"Only the preposition meaning 'about'.","skip_if":["concerning trend","deeply concerning","is concerning","very concerning","concerning herself","concerning himself","concerning themselves","was concerning","is deeply concerning"]},{"id":"sub_consequently","match":"consequently","match_type":"word","replacements":["so"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_create_a_dialogue","match":"create a dialogue","match_type":"phrase","replacements":["speak","discuss","talk"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_desire","match":"desire","match_type":"word","replacements":["want"],"morphology":"inflect","sense_guard":"Prefer the verb.","skip_if":[]},{"id":"sub_despite_the_fact_that","match":"despite the fact that","match_type":"phrase","replacements":["although"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_disburse","match":"disburse","match_type":"word","replacements":["pay"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_discontinue","match":"discontinue","match_type":"word","replacements":["stop","end"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_dispatch","match":"dispatch","match_type":"word","replacements":["send"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_due_to_the_fact_that","match":"due to the fact that","match_type":"phrase","replacements":["because"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_exit","match":"exit","match_type":"word","replacements":["leave"],"morphology":"inflect","sense_guard":"Verb only.","skip_if":["the exit","emergency exit","exit sign","exit row"]},{"id":"sub_give_consideration_to","match":"give consideration to","match_type":"phrase","replacements":["consider"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_impact","match":"impact","match_type":"word","replacements":["affect"],"morphology":"inflect","sense_guard":"Only the verb meaning 'affect'.","skip_if":["the impact","an impact","impact assessment","environmental impact","impact statement","social impact"]},{"id":"sub_implement","match":"implement","match_type":"word","replacements":["apply","install","do","start"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_in_order_to","match":"in order to","match_type":"phrase","replacements":["to"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_in_relation_to","match":"in relation to","match_type":"phrase","replacements":["about","on"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_in_regards_to","match":"in regards to","match_type":"phrase","replacements":["about","on"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_in_respect_of","match":"in respect of","match_type":"phrase","replacements":["about","on"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_in_the_event_that","match":"in the event that","match_type":"phrase","replacements":["if","when"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_inquire","match":"inquire","match_type":"word","replacements":["ask"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_make_an_application","match":"make an application","match_type":"phrase","replacements":["apply"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_make_a_complaint","match":"make a complaint","match_type":"phrase","replacements":["complain"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_manner","match":"manner","match_type":"word","replacements":["way"],"morphology":"as_is","sense_guard":"Only when it means 'way'.","skip_if":["bedside manner","all manner of","good manners","bad manners","manner of speaking"]},{"id":"sub_notwithstanding","match":"notwithstanding","match_type":"word","replacements":["even though","though","despite"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_obtain","match":"obtain","match_type":"word","replacements":["get","have"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_prior_to","match":"prior to","match_type":"phrase","replacements":["before"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_primary","match":"primary","match_type":"word","replacements":["main"],"morphology":"as_is","sense_guard":"Only when it means 'chief'.","skip_if":["primary school","primary care","primary election","primary key","primary producer","primary industry","primary source","primary colour","primary colours"]},{"id":"sub_provide_a_response_to","match":"provide a response to","match_type":"phrase","replacements":["respond to"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_provide_assistance_with","match":"provide assistance with","match_type":"phrase","replacements":["help","support"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_pursuant_to","match":"pursuant to","match_type":"phrase","replacements":["under"],"morphology":"as_is","sense_guard":"Legal phrasing — confirm 'under' keeps the reference.","skip_if":[]},{"id":"sub_subsequently","match":"subsequently","match_type":"word","replacements":["after"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_thereafter","match":"thereafter","match_type":"word","replacements":["then","afterwards"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_until_such_time_as","match":"until such time as","match_type":"phrase","replacements":["until"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_upon","match":"upon","match_type":"word","replacements":["on"],"morphology":"as_is","sense_guard":null,"skip_if":["once upon a time"]},{"id":"sub_utilise","match":"utilise","match_type":"word","replacements":["use"],"morphology":"inflect","sense_guard":null,"skip_if":[]},{"id":"sub_whilst","match":"whilst","match_type":"word","replacements":["while"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_with_reference_to","match":"with reference to","match_type":"phrase","replacements":["about"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_with_regard_to","match":"with regard to","match_type":"phrase","replacements":["about"],"morphology":"as_is","sense_guard":null,"skip_if":[]},{"id":"sub_with_respect_to","match":"with respect to","match_type":"phrase","replacements":["about"],"morphology":"as_is","sense_guard":null,"skip_if":[]}],"version":"2026.06.1"};
-
-const AU_SPELLING_DATA = {"organize":"organise","organized":"organised","organizes":"organises","organizing":"organising","organization":"organisation","organizations":"organisations","recognize":"recognise","recognized":"recognised","recognizing":"recognising","realize":"realise","realized":"realised","realizing":"realising","analyze":"analyse","analyzed":"analysed","analyzing":"analysing","color":"colour","colors":"colours","colored":"coloured","behavior":"behaviour","behaviors":"behaviours","favor":"favour","favors":"favours","favorite":"favourite","honor":"honour","honored":"honoured","labor":"labour","neighbor":"neighbour","neighbors":"neighbours","center":"centre","centers":"centres","centered":"centred","meter":"metre","meters":"metres","theater":"theatre","fiber":"fibre","defense":"defence","offense":"offence","catalog":"catalogue","dialog":"dialogue","traveler":"traveller","traveled":"travelled","traveling":"travelling","modeling":"modelling","canceled":"cancelled","canceling":"cancelling","fulfill":"fulfil","gray":"grey","maximize":"maximise","minimize":"minimise","prioritize":"prioritise","emphasize":"emphasise","summarize":"summarise","customize":"customise","optimize":"optimise","standardize":"standardise","specialize":"specialise","apologize":"apologise","authorize":"authorise","finalize":"finalise","utilize":"utilise"};
-
-/* ==================================================================== *
- *  PART 1 — DocumentAdapter : the seam to real Word (Office.js).        *
- * ==================================================================== */
-const DocumentAdapter = (function () {
-  // Word highlights only accept a fixed set of NAMED colours (no custom hex,
-  // no pastels — Word snaps any other value to the nearest named one). So we
-  // pick the gentlest of the available set and give the SOFTEST to the most
-  // frequent mark. Deliberately avoids the harsh pink/red.
-  const HL = {
-    swap:  'Turquoise',   // calmest neutral — carries the most-common mark
-    spell: 'Yellow',      // familiar, naturally light spelling cue
-    flag:  'BrightGreen'  // readable but not alarming (no red/pink)
-  };
-
-  async function getText() {
-    return Word.run(async (context) => {
-      const body = context.document.body;
-      body.load('text');
-      await context.sync();
-      return body.text;
-    });
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plainform</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<style>
+  :root {
+    --ink: #1a1f24; --ink-soft: #586470; --paper: #f6f4ef; --panel: #ffffff;
+    --line: #d9d4c9; --rule: #e8e4db; --gov: #0b3d59; --gov-soft: #e6eef3;
+    --gov-hover: #0d4a6b; --apply: #1f6b4a; --apply-bg: #e7f1ec; --suggest: #8a5e00;
+    --suggest-bg: #faf0d7; --flag: #93724a; --flag-bg: #f1ece3; --au: #5b3a8a; --au-bg: #ece4f5;
+    --focus: #0b6fa8; --ring: rgba(11,111,168,.35); --subtle: #fbfaf7;
+    --shadow: 0 1px 2px rgba(26,31,36,.04), 0 8px 24px rgba(26,31,36,.05); --strike: #c4a0a0;
+    --mono: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: "Segoe UI", -apple-system, BlinkMacSystemFont, "Inter", Roboto, sans-serif;
+    --serif: "Spectral", Georgia, "Times New Roman", serif;
   }
-
-  async function onChange(cb) {
-    return Word.run(async (context) => {
-      context.document.onParagraphChanged.add(async () => { cb(); });
-      await context.sync();
-    });
+  [data-theme="dark"] {
+    --ink: #e9e7e2; --ink-soft: #a3acb6; --paper: #15191d; --panel: #1e242a;
+    --line: #353d45; --rule: #2b323a; --gov: #6cbce8; --gov-soft: #1f3340;
+    --gov-hover: #7cc6ef; --apply: #63c693; --apply-bg: #18302440; --suggest: #e0b04a;
+    --suggest-bg: #38291040; --flag: #c2a888; --flag-bg: #2c261d40; --au: #bb9fe8; --au-bg: #2719382f;
+    --focus: #6cbce8; --ring: rgba(108,188,232,.4); --subtle: #232a30; --strike: #8a7a6a;
   }
-
-  // Replace the Nth occurrence of `fromText` with `toText`.
-  // tracked=true turns on Word's change-tracking just for this edit (#17).
-  // Searches fresh at apply-time so edits between scan and apply can't
-  // mistarget; returns 'stale' if the occurrence no longer exists (#3).
-  async function replace(fromText, occurrence, toText, tracked) {
-    return Word.run(async (context) => {
-      let prevTracking = null;
-      if (tracked) {
-        // remember the doc's current tracking mode, switch to TrackAll
-        const doc = context.document;
-        doc.load('changeTrackingMode');
-        await context.sync();
-        prevTracking = doc.changeTrackingMode;
-        doc.changeTrackingMode = Word.ChangeTrackingMode.trackAll;
-        await context.sync();
-      }
-      const results = context.document.body.search(fromText, { matchCase: true, matchWholeWord: true });
-      results.load('items');
-      await context.sync();
-
-      let outcome = 'stale';
-      if (occurrence < results.items.length) {
-        const range = results.items[occurrence];
-        range.insertText(toText, Word.InsertLocation.replace);
-        range.font.highlightColor = null;
-        await context.sync();
-        outcome = true;
-      }
-      if (tracked && prevTracking !== null) {
-        context.document.changeTrackingMode = prevTracking;
-        await context.sync();
-      }
-      return outcome;
-    });
-  }
-
-  const COMMENT_TAG = 'Plainform — ';   // prefix so we can find & clear our own comments
-
-  // Paint soft underlines for every mark. If withComments is true, also attach
-  // a Word comment carrying the issue + recommended change, so hovering/clicking
-  // the word in the document shows the explanation in Word's own bubble.
-  async function markup(markList, withComments) {
-    // Highlights first — the widely-supported, must-always-work part.
-    await Word.run(async (context) => {
-      clearHighlightsIn(context.document.body);
-
-      // Group by the text we actually HIGHLIGHT (full sentence for sentence
-      // flags; the word/phrase otherwise). Each group remembers its colour and
-      // a fallback string for when a long search fails.
-      const groups = {};
-      markList.forEach(mk => {
-        const ht = mk.highlightText || mk.from;
-        const key = ht;
-        (groups[key] = groups[key] || { text: ht, kind: mk.kind, marks: [], fallback: mk.from }).marks.push(mk);
-      });
-
-      const searches = [];
-      Object.keys(groups).forEach(key => {
-        const g = groups[key];
-        // Word search caps around 255 chars and matchWholeWord fails on strings
-        // containing punctuation, so for long/sentence text we search plainly
-        // and trim to a safe length.
-        const isLong = g.text.length > 120;
-        const term = isLong ? g.text.slice(0, 200) : g.text;
-        const opts = isLong ? {} : { matchCase: true, matchWholeWord: true };
-        let r;
-        try { r = context.document.body.search(term, opts); r.load('items'); }
-        catch (e) { r = null; }
-        searches.push({ g, results: r });
-      });
-      await context.sync();
-
-      searches.forEach(({ g, results }) => {
-        if (!results) return;
-        // For a full-sentence highlight there's one match per occurrence order;
-        // colour each mark's occurrence-th hit.
-        g.marks.forEach(mk => {
-          const idx = mk.occurrence < results.items.length ? mk.occurrence : 0;
-          if (results.items.length > idx) {
-            results.items[idx].font.highlightColor = HL[mk.kind] || HL.flag;
-          }
-        });
-      });
-      await context.sync();
-    });
-
-    // Comments second, in a SEPARATE, fully-guarded pass. The comment APIs
-    // (getComments / insertComment / contentRange) are newer and may be missing;
-    // if anything here fails it must NOT affect the highlights above or the
-    // sidebar. So we swallow errors and simply skip comments on older builds.
-    if (!withComments) return;
-    if (!isCommentsApiAvailable()) return;
-    try {
-      await Word.run(async (context) => {
-        await deletePlainformComments(context);
-        const byText = {};
-        markList.forEach(mk => { if (mk.explain) (byText[mk.from] = byText[mk.from] || []).push(mk); });
-        const searches = [];
-        Object.keys(byText).forEach(text => {
-          const r = context.document.body.search(text, { matchCase: true, matchWholeWord: true });
-          r.load('items');
-          searches.push({ text, results: r });
-        });
-        await context.sync();
-        searches.forEach(({ text, results }) => {
-          byText[text].forEach(mk => {
-            if (mk.occurrence < results.items.length && mk.explain) {
-              try { results.items[mk.occurrence].insertComment(COMMENT_TAG + mk.explain); } catch (e) {}
-            }
-          });
-        });
-        await context.sync();
-      });
-    } catch (e) {
-      console.error('comments pass skipped:', e);
-    }
-  }
-
-  // Feature-detect the comments API so we never even attempt it where missing.
-  function isCommentsApiAvailable() {
-    try {
-      return !!(Office && Office.context && Office.context.requirements &&
-                Office.context.requirements.isSetSupported('WordApi', '1.4'));
-    } catch (e) { return false; }
-  }
-
-  function clearHighlightsIn(body) {
-    body.font.highlightColor = null;
-    body.font.underline = 'None';   // matches the known-working baseline exactly
-  }
-
-  // Delete only Plainform's own comments (by our prefix). Guarded: if the
-  // comments API is unavailable, do nothing rather than throw.
-  async function deletePlainformComments(context) {
-    if (!isCommentsApiAvailable()) return;
-    let comments;
-    try {
-      comments = context.document.body.getComments();
-      comments.load('items');
-      await context.sync();
-    } catch (e) { return; }
-    try {
-      comments.items.forEach(c => c.contentRange.load('text'));
-      await context.sync();
-      let removed = false;
-      comments.items.forEach(c => {
-        const t = (c.contentRange && c.contentRange.text) || '';
-        if (t.indexOf(COMMENT_TAG) === 0) { c.delete(); removed = true; }
-      });
-      if (removed) await context.sync();
-    } catch (e) { /* leave comments alone if we can't read them */ }
-  }
-
-  async function clearMarks() {
-    // Underlines always clear; comment clearing is separate and guarded.
-    await Word.run(async (context) => { clearHighlightsIn(context.document.body); await context.sync(); });
-    if (isCommentsApiAvailable()) {
-      try { await Word.run(async (context) => { await deletePlainformComments(context); }); } catch (e) {}
-    }
-  }
-
-  // Read just the user's current selection (used by the AI review, so only the
-  // chosen passage — never the whole document — is ever sent anywhere).
-  async function getSelectionText() {
-    return Word.run(async (context) => {
-      const sel = context.document.getSelection();
-      sel.load('text');
-      await context.sync();
-      return sel.text || '';
-    });
-  }
-
-  // Replace the current selection with new text (used to apply an AI rewrite).
-  async function replaceSelection(toText, tracked) {
-    return Word.run(async (context) => {
-      let prev = null;
-      if (tracked) {
-        const doc = context.document; doc.load('changeTrackingMode'); await context.sync();
-        prev = doc.changeTrackingMode; doc.changeTrackingMode = Word.ChangeTrackingMode.trackAll; await context.sync();
-      }
-      const sel = context.document.getSelection();
-      sel.insertText(toText, Word.InsertLocation.replace);
-      await context.sync();
-      if (tracked && prev !== null) { context.document.changeTrackingMode = prev; await context.sync(); }
-    });
-  }
-
-  return { getText, onChange, replace, markup, clearMarks, getSelectionText, replaceSelection, commentsSupported: isCommentsApiAvailable };
-})();
-
-
-/* ==================================================================== *
- *  PART 2 — Engine : pure analysis. Returns { suggestions, marks }.     *
- *  suggestions now include word swaps AND spelling (both clickable, #1).*
- *  marks now also include acronym (#12) and number/date (#15) flags.    *
- * ==================================================================== */
-const Engine = (function () {
-  const D = ENGINE_DATA;
-  const AU_SPELLING = AU_SPELLING_DATA;
-  const entries = D.entries.map(e => ({ ...e, skipLower: (e.skip_if || []).map(s => s.toLowerCase()) }));
-  const phraseEntries = entries.filter(e => e.match_type === 'phrase').sort((a, b) => b.match.length - a.match.length);
-  const wordEntries = entries.filter(e => e.match_type === 'word');
-
-  const PHRASE_INFLECT = {
-    'collaborate with': { forms: ['collaborate with','collaborates with','collaborated with','collaborating with'],
-                          out: ['work with','works with','worked with','working with'] }
-  };
-  // small number words AGSM prefers spelled out (one–nine)
-  const SMALL_NUMS = { '1':'one','2':'two','3':'three','4':'four','5':'five','6':'six','7':'seven','8':'eight','9':'nine' };
-
-  function formIndexFor(match, surface) {
-    const vf = D.verbForms[match]; if (!vf) return 0;
-    const low = surface.toLowerCase();
-    for (let i = 0; i < 4; i++) if (vf[i] === low) return i;
-    return 0;
-  }
-  function inflectRepl(match, repl, idx) {
-    const rf = D.replForms[match];
-    if (rf && rf[repl]) return rf[repl][idx];
-    return repl;
-  }
-  function matchCase(src, out) {
-    if (src && src[0] === src[0].toUpperCase() && src[0] !== src[0].toLowerCase())
-      return out.charAt(0).toUpperCase() + out.slice(1);
-    return out;
-  }
-  function escapeRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  function maskQuotes(text) {
-    return text.replace(/(["\u201C\u201D])(.*?)(["\u201C\u201D])/gs, m => ' '.repeat(m.length));
-  }
-  function inSkip(masked, entry, idx, len) {
-    if (!entry.skipLower.length) return false;
-    const ctx = masked.slice(Math.max(0, idx - 22), Math.min(masked.length, idx + len + 22)).toLowerCase();
-    return entry.skipLower.some(sk => ctx.includes(sk));
-  }
-
-  function analyse(rawText, ignoreSet) {
-    ignoreSet = ignoreSet || new Set();
-    const masked = maskQuotes(rawText);
-    let hits = []; // word/phrase swaps  {start,end,from,to,alts,note}
-    function overlaps(s, e) { return hits.some(h => s < h.end && e > h.start); }
-
-    // ---- phrase pass ----
-    phraseEntries.forEach(entry => {
-      const infl = PHRASE_INFLECT[entry.match];
-      let re, forms;
-      if (infl) { forms = infl.forms; re = new RegExp('\\b(' + forms.map(escapeRe).join('|') + ')\\b', 'gi'); }
-      else { re = new RegExp('\\b' + escapeRe(entry.match) + '\\b', 'gi'); }
-      let m;
-      while ((m = re.exec(masked)) !== null) {
-        const idx = m.index, surf = m[0];
-        if (overlaps(idx, idx + surf.length)) continue;
-        if (inSkip(masked, entry, idx, surf.length)) continue;
-        let base = entry.replacements[0], alts = entry.replacements.slice(1);
-        if (infl) { const fi = forms.findIndex(f => f.toLowerCase() === surf.toLowerCase());
-          base = infl.out[fi >= 0 ? fi % infl.out.length : 0]; alts = []; }
-        hits.push({ start: idx, end: idx + surf.length, from: surf,
-          to: matchCase(surf, base), alts: alts.map(a => matchCase(surf, a)), note: entry.sense_guard || '', cat: 'swap' });
-      }
-    });
-
-    // ---- word pass ----
-    wordEntries.forEach(entry => {
-      const forms = D.verbForms[entry.match] || [entry.match];
-      const alts = [...new Set(forms)].map(escapeRe);
-      const re = new RegExp('\\b(' + alts.join('|') + ')\\b', 'gi');
-      let m;
-      while ((m = re.exec(masked)) !== null) {
-        const idx = m.index, surf = m[0];
-        if (overlaps(idx, idx + surf.length)) continue;
-        if (inSkip(masked, entry, idx, surf.length)) continue;
-        const fIdx = formIndexFor(entry.match, surf);
-        const reps = entry.replacements.map(r => matchCase(surf, inflectRepl(entry.match, r, fIdx)));
-        hits.push({ start: idx, end: idx + surf.length, from: surf, to: reps[0], alts: reps.slice(1), note: entry.sense_guard || '', cat: 'swap' });
-      }
-    });
-
-    // ---- spelling pass: now produces clickable suggestions too (#1) ----
-    Object.keys(AU_SPELLING).forEach(us => {
-      const re = new RegExp('\\b' + escapeRe(us) + '\\b', 'gi');
-      let m;
-      while ((m = re.exec(masked)) !== null) {
-        const idx = m.index, surf = m[0];
-        if (overlaps(idx, idx + surf.length)) continue;
-        hits.push({ start: idx, end: idx + surf.length, from: surf,
-          to: matchCase(surf, AU_SPELLING[us]), alts: [], note: 'Australian spelling', cat: 'spell' });
-      }
-    });
-
-    hits.sort((a, b) => a.start - b.start);
-
-    // suggestions for the sidebar (swaps + spelling), with occurrence numbers
-    const seen = {};
-    const suggestions = hits
-      .filter(h => !ignoreSet.has(h.from.toLowerCase()))
-      .map((h, i) => {
-        const occurrence = seen[h.from] = (seen[h.from] === undefined ? 0 : seen[h.from] + 1);
-        return { id: 'h' + i, from: h.from, to: h.to, alts: h.alts, note: h.note, cat: h.cat, occurrence };
-      });
-
-    // ---- marks for highlighting ----
-    let marks = [];
-    const seenSwap = {};
-    hits.forEach(h => {
-      if (ignoreSet.has(h.from.toLowerCase())) return;
-      const occ = seenSwap[h.from] = (seenSwap[h.from] === undefined ? 0 : seenSwap[h.from] + 1);
-      const label = h.cat === 'spell' ? 'Australian spelling' : 'Plainer wording';
-      const extraNote = (h.note && h.note !== 'Australian spelling') ? '. ' + h.note : '';
-      const explain = label + ': “' + h.from + '” → “' + h.to + '”'
-        + (h.alts && h.alts.length ? ' (or ' + h.alts.map(a => '“' + a + '”').join(', ') + ')' : '')
-        + extraNote;
-      marks.push({ from: h.from, occurrence: occ, kind: h.cat === 'spell' ? 'spell' : 'swap',
-                   start: h.start, end: h.end, explain });
-    });
-    function spanTaken(s, e) { return marks.some(mk => s < mk.end && e > mk.start); }
-    function occForText(text, startPos) { return marks.filter(mk => mk.from === text && mk.start < startPos).length; }
-
-    // flags collected separately so they can carry an explanation (#2)
-    const flags = []; // {from, occurrence, kind:'flag', subtype, note, start, end}
-    function addFlag(text, start, end, subtype, note, highlightText) {
-      if (spanTaken(start, end) && subtype !== 'sentence') return;
-      const occ = occForText(text, start);
-      const TITLE = { sentence:'Long sentence', passive:'Passive voice', doublneg:'Double negative',
-                      acronym:'Undefined acronym', number:'Number format', date:'Date format' };
-      const title = TITLE[subtype] || 'Check';
-      const cleanNote = (note && note.toLowerCase().indexOf(title.toLowerCase()) === 0) ? '' : note;
-      const mk = { from: text, occurrence: occ, kind: 'flag', subtype, note, start, end,
-                   explain: title + (cleanNote ? ': ' + cleanNote : '.'),
-                   // what to HIGHLIGHT in the doc (defaults to `from`; for long
-                   // sentences this is the whole sentence so the mark isn't a stub)
-                   highlightText: highlightText || text };
-      marks.push(mk); flags.push(mk);
-    }
-
-    // long sentences — highlight the WHOLE sentence, but show a short lead in the sidebar.
-    // Common abbreviations end in a period without actually ending the sentence
-    // (e.g. "s. 5", "cl. 3", "Pty Ltd.", "e.g.", "etc."), which are routine in
-    // government/legal text. Without accounting for these, a genuinely long
-    // sentence gets chopped into short fragments at each abbreviation and never
-    // gets flagged. So: split into rough sentence chunks first, then re-join any
-    // chunk that ends with a known abbreviation onto the next one before counting.
-    const ABBREV_END = /\b(s|cl|reg|no|pty|ltd|cwlth|dept|govt|assn|inc|corp|approx|e\.g|i\.e|etc|mr|mrs|ms|dr|prof)\.$/i;
-    let roughRe = /[^.!?]+[.!?]+/g, rm;
-    let chunks = [];
-    while ((rm = roughRe.exec(rawText)) !== null) chunks.push({ text: rm[0], index: rm.index });
-    let merged = [];
-    for (let i = 0; i < chunks.length; i++) {
-      if (merged.length && ABBREV_END.test(merged[merged.length - 1].text.trim())) {
-        merged[merged.length - 1].text += chunks[i].text;   // glue onto the previous chunk
-      } else {
-        merged.push({ text: chunks[i].text, index: chunks[i].index });
-      }
-    }
-    merged.forEach(chunk => {
-      const whole = chunk.text.trim();
-      const words = whole.split(/\s+/).filter(Boolean).length;
-      if (words > 25) {
-        const lead = whole.split(/\s+/).slice(0, 6).join(' ');
-        addFlag(lead, chunk.index, chunk.index + whole.length, 'sentence',
-                words + ' words (AGSM suggests ~25 max).', whole);
-      }
-    });
-    // passive voice
-    const pvRe = /\b(is|are|was|were|be|been|being)\s+(\w+ed|made|held|given|taken|sent|paid|built|shown)\b/gi;
-    let pv;
-    while ((pv = pvRe.exec(masked)) !== null) {
-      addFlag(pv[0], pv.index, pv.index + pv[0].length, 'passive', 'Possible passive voice.');
-    }
-    // double negatives
-    const dnRe = /\bnot\s+un(\w+)/gi; let dn;
-    while ((dn = dnRe.exec(masked)) !== null) {
-      addFlag(dn[0], dn.index, dn.index + dn[0].length, 'doublneg', 'Double negative.');
-    }
-
-    // ---- #12 acronyms: all-caps tokens (2+ letters) never defined with "(...)" ----
-    const defined = new Set();
-    // capture "Full Name (ABC)" style definitions
-    let defRe = /\(([A-Z]{2,6})\)/g, dm;
-    while ((dm = defRe.exec(rawText)) !== null) defined.add(dm[1]);
-    const acRe = /\b([A-Z]{2,6})\b/g; let ac;
-    const acSeen = {};
-    while ((ac = acRe.exec(masked)) !== null) {
-      const tok = ac[1];
-      if (defined.has(tok)) continue;
-      if (['THE','AND','FOR','NOT','ALL','ANY','MAY','WILL','PDF','CSV','OK','URL','USA','GST'].includes(tok)) continue;
-      if (ignoreSet.has(tok.toLowerCase())) continue;
-      const s = ac.index, e = s + tok.length;
-      if (spanTaken(s, e)) continue;
-      addFlag(tok, s, e, 'acronym', 'Acronym “' + tok + '” — define it on first use, e.g. “Full Name (' + tok + ')”.');
-    }
-
-    // ---- #15 number / date formatting ----
-    // ambiguous numeric dates FIRST, so they claim digits before the
-    // single-digit rule can grab the day/month numbers inside them.
-    const dateRe = /\b(\d{1,2}\/\d{1,2}\/\d{2,4})\b/g; let dt;
-    while ((dt = dateRe.exec(masked)) !== null) {
-      const s = dt.index, e = s + dt[1].length;
-      if (spanTaken(s, e)) continue;
-      addFlag(dt[1], s, e, 'date', 'Ambiguous date — AGSM prefers “3 April 2025” to “3/4/2025”.');
-    }
-    // big numbers without thousands separators e.g. 10000
-    const bigRe = /\b(\d{5,})\b/g; let bm;
-    while ((bm = bigRe.exec(masked)) !== null) {
-      const s = bm.index, e = s + bm[1].length;
-      if (spanTaken(s, e)) continue;
-      addFlag(bm[1], s, e, 'number', 'Large number — AGSM uses thousands separators (e.g. 10,000).');
-    }
-    // small digits 1–9 used as a standalone count before a word (e.g. "5 applicants").
-    // Deliberately conservative — bare digits are too ambiguous to flag in general
-    // (years, list numbers, references), so we require "<digit> <lowercase word>".
-    // EXCEPTION: AGSM (like most style guides) prefers numerals — not spelled-out
-    // words — for units, times, money, ages, and similar, even under ten. So "5 km"
-    // and "3 pm" are correct as written and should NOT be flagged.
-    const UNIT_WORDS = new Set([
-      'km','kg','mg','ml','cm','mm','m','g','l','pm','am',
-      'years','year','yrs','months','month','weeks','week',
-      'days','day','hours','hour','hrs','minutes','mins','min',
-      'seconds','secs','sec','percent','pc'
-    ]);
-    const numRe = /\b([1-9])\s+([a-z]{2,})/g; let nm;
-    while ((nm = numRe.exec(masked)) !== null) {
-      const s = nm.index, e = s + 1;
-      if (spanTaken(s, e)) continue;
-      if (UNIT_WORDS.has(nm[2].toLowerCase())) continue;   // "5 km", "3 pm" etc. are correct as-is
-      addFlag(nm[1], s, e, 'number', 'AGSM: spell out one–nine (“' + nm[1] + '” → “' + SMALL_NUMS[nm[1]] + '”).');
-    }
-
-    marks.sort((a, b) => a.start - b.start);
-    flags.sort((a, b) => a.start - b.start);
-    return { suggestions, marks, flags };
-  }
-
-  // expose number-word helper for the controller's double-neg fix
-  return { analyse };
-})();
-
-
-/* ==================================================================== *
- *  PART 2b — AiModule : the OPTIONAL AI assistant (Gemini via relay).   *
- *                                                                      *
- *  SAFETY BY DESIGN — "off means off":                                 *
- *  - This module sends NOTHING anywhere on its own. It has no timers,   *
- *    no listeners, no background calls. It is inert until `review()` is *
- *    explicitly called by a deliberate user action.                    *
- *  - The controller only calls review() when BOTH the AI toggle is on   *
- *    AND the user clicked "Ask AI to review this passage".             *
- *  - When the toggle is off, the controller never references this       *
- *    module, so no document text is ever passed to it.                 *
- *                                                                      *
- *  HOW THE REAL CALL WORKS                                             *
- *  We POST the chosen passage to OUR relay (a Cloudflare Worker). The   *
- *  relay holds the secret Gemini key and forwards to Google, so the key *
- *  is NEVER in this browser code. If RELAY_URL is left as the          *
- *  placeholder, the module stays in safe demo mode and sends nothing.  *
- * ==================================================================== */
-const CopilotModule = (function () {
-  // >>> EDIT THIS to your Cloudflare Worker URL (see the setup guide). <<<
-  // While it still contains 'REPLACE', the module runs in safe DEMO mode
-  // and never makes a network call.
-  const RELAY_URL = 'https://REPLACE-WITH-YOUR-WORKER.workers.dev/review';
-
-  let ENABLED = false;   // mirrors the toggle; the controller sets this explicitly
-  function setEnabled(on) { ENABLED = !!on; }
-  function isEnabled() { return ENABLED; }
-  function isLive() { return RELAY_URL.indexOf('REPLACE') === -1; }
-
-  async function callAi(passage, knownIssues) {
-    if (!ENABLED) throw new Error('AI is disabled — no text may be sent.');
-
-    // DEMO mode: relay not configured yet → no network, nothing leaves the machine.
-    if (!isLive()) {
-      await new Promise(r => setTimeout(r, 400));
-      return {
-        rewrite: '[AI rewrite will appear here once the Gemini relay URL is set.]',
-        reason: 'Demo mode — no text was sent anywhere. Set RELAY_URL to go live.',
-        placeholder: true
-      };
-    }
-
-    // LIVE mode: send the chosen passage AND the specific issues Plainform's
-    // own checker already found in it, so the AI fixes exactly what's wrong
-    // here rather than guessing generically. Only the passage and a short
-    // list of plain-English issue descriptions are sent — never the whole
-    // document, and never automatically.
-    const res = await fetch(RELAY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ passage, known_issues: (knownIssues || []).slice(0, 20) })
-    });
-    if (!res.ok) {
-      let msg = 'AI request failed (' + res.status + ').';
-      try { const e = await res.json(); if (e.error) msg = e.error; } catch (x) {}
-      throw new Error(msg);
-    }
-    const data = await res.json();
-    return { rewrite: data.rewrite || '', reason: data.reason || '', placeholder: false };
-  }
-
-  // The ONLY entry point the controller uses. Guarded so it cannot run
-  // unless explicitly enabled — a structural backstop, not just a UI check.
-  async function review(passage, knownIssues) {
-    if (!ENABLED) throw new Error('AI is disabled.');
-    if (!passage || !passage.trim()) return null;
-    return callAi(passage, knownIssues);
-  }
-
-  return { setEnabled, isEnabled, isLive, review };
-})();
-
-
-/* ==================================================================== *
- *  PART 3 — UI controller.                                              *
- * ==================================================================== */
-function startPlainform() {
-  const $ = id => document.getElementById(id);
-  const sugList = $('sugList'), emptyState = $('emptyState'), statusEl = $('status'),
-        statusText = $('statusText'), autoToggle = $('autoToggle'), scanBtn = $('scanBtn'),
-        ctlHint = $('ctlHint'), clearHlBtn = $('clearHlBtn'), trackToggle = $('trackToggle'),
-        commentsToggle = $('commentsToggle'),
-        flagList = $('flagList'), flagSection = $('flagSection'),
-        applyAllBtn = $('applyAllBtn'), exportCsvBtn = $('exportCsvBtn'),
-        aiToggle = $('aiToggle'), aiSection = $('aiSection'), aiBody = $('aiBody'),
-        aiReviewBtn = $('aiReviewBtn'), aiConsent = $('aiConsent'),
-        aiConsentYes = $('aiConsentYes'), aiConsentNo = $('aiConsentNo');
-
-  $('boot').style.display = 'none';
-  ['controls','legend','status','tabsRow'].forEach(id => { const el = $(id); if (el) el.style.display = ''; });
-  // 'flex' (not '') is required here: editorPanel's own children rely on it
-  // being a flex container so the middle .scroll area gets a bounded height
-  // and scrolls internally, keeping the footer pinned at the bottom instead
-  // of being pushed off-screen by however much content is in the sidebar.
-  $('editorPanel').style.display = 'flex';
-
-  let chosen = {};
-  let debounceTimer = null;
-  let scanning = false;
-  let mutating = false;   // true while an Apply/Ignore/Fix action is being applied to the document
-
-  // Runs `fn` only if nothing else is currently editing the document. This
-  // stops two "Apply" clicks in quick succession from opening two separate
-  // Word edit sessions at the same time, which could otherwise interfere
-  // with each other. While locked, the whole sidebar is dimmed and ignores
-  // clicks, so it's clear to the user why nothing is happening for a moment.
-  async function withLock(fn) {
-    if (mutating) return;
-    mutating = true;
-    sugList.style.opacity = '.6'; sugList.style.pointerEvents = 'none';
-    flagList.style.opacity = '.6'; flagList.style.pointerEvents = 'none';
-    try {
-      await fn();
-    } finally {
-      mutating = false;
-      sugList.style.opacity = ''; sugList.style.pointerEvents = '';
-      flagList.style.opacity = ''; flagList.style.pointerEvents = '';
-    }
-  }
-  let lastResult = { suggestions: [], marks: [], flags: [] };
-  const ignoreSet = new Set();         // #8-lite: words the user says "ignore" to
-  const auditLog = [];                 // every action, for CSV export (#16)
-
-  function setStatus(kind, text) { statusEl.className = 'status ' + (kind || ''); statusText.textContent = text; }
-  function esc(s){ return (s||'').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
-  function tracked() { return trackToggle && trackToggle.checked; }
-  function commentsOn() { return commentsToggle && commentsToggle.checked; }
-
-  async function scan() {
-    if (scanning) return;
-    scanning = true;
-    setStatus('scanning', 'Scanning…');
-    let res;
-    try {
-      const text = await DocumentAdapter.getText();
-      res = Engine.analyse(text, ignoreSet);
-      lastResult = res;
-    } catch (e) {
-      setStatus('', 'Could not read the document. Try Scan now.');
-      console.error('getText/analyse failed:', e);
-      scanning = false;
-      return;
-    }
-    // Render the sidebar FIRST. This must never be blocked by document marking —
-    // if highlighting or comments fail (unsupported Word build), the suggestions
-    // and flags still appear. This ordering is the core regression fix.
-    renderSuggestions(res.suggestions);
-    renderFlags(res.flags);
-    // Then mark the document. Wrapped so any marking failure is non-fatal.
-    try {
-      await DocumentAdapter.markup(res.marks, commentsOn());
-    } catch (e) {
-      console.error('markup failed (sidebar still shown):', e);
-      setStatus('found', res.suggestions.length + ' in sidebar; document marks unavailable in this Word version.');
-    }
-    scanning = false;
-  }
-
-  /* ---------- suggestions (swaps + spelling) ---------- */
-  function renderSuggestions(suggestions) {
-    sugList.innerHTML = '';
-    applyAllBtn.style.display = suggestions.length ? '' : 'none';
-    if (!suggestions.length) {
-      emptyState.style.display = '';
-      emptyState.querySelector('.big').textContent = 'Looks plain';
-      emptyState.querySelector('.big').style.color = 'var(--apply)';
-      emptyState.querySelector('.sub').textContent = 'No word or spelling swaps found. Any sentence or formatting issues appear below.';
-      setStatus('clean', 'No swaps — the wording already reads plainly.');
-      return;
-    }
-    emptyState.style.display = 'none';
-    setStatus('found', suggestions.length + (suggestions.length === 1 ? ' swap' : ' swaps') + ' found.');
-
-    suggestions.forEach(s => {
-      const li = document.createElement('li');
-      li.className = 'sug';
-      const tag = s.cat === 'spell'
-        ? '<span class="cat-tag spell">spelling</span>'
-        : '<span class="cat-tag swap">word</span>';
-      const altChips = (s.alts && s.alts.length)
-        ? '<div class="alt-pick">' + [s.to, ...s.alts].map((opt, i) =>
-            '<button class="chip" data-opt="' + esc(opt) + '"' + (i === 0 ? ' aria-pressed="true"' : '') + '>' + esc(opt) + '</button>').join('') + '</div>'
-        : '';
-      li.innerHTML =
-        '<div class="sug-change">' + tag + '<span class="sug-from">' + esc(s.from) + '</span>' +
-        '<span class="sug-arrow">→</span><span class="sug-to" data-to>' + esc(s.to) + '</span></div>' +
-        (s.note ? '<p class="sug-note">' + esc(s.note) + '</p>' : '') +
-        '<div class="sug-acts">' + altChips +
-          '<button class="mini" data-ignore>Ignore</button>' +
-          '<button class="mini apply" data-apply>Apply</button>' +
-        '</div>';
-      chosen[s.id] = s.to;
-
-      li.querySelectorAll('.chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-          li.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
-          chip.setAttribute('aria-pressed', 'true');
-          chosen[s.id] = chip.dataset.opt;
-          li.querySelector('[data-to]').textContent = chip.dataset.opt;
-        });
-      });
-      li.querySelector('[data-apply]').addEventListener('click', () => {
-        withLock(() => applyOne(s, chosen[s.id], li));
-      });
-      li.querySelector('[data-ignore]').addEventListener('click', () => {
-        ignoreSet.add(s.from.toLowerCase());
-        logAudit(s.cat === 'spell' ? 'spelling' : 'word swap', s.from, s.to, 'ignored');
-        li.remove(); afterSugChange();
-      });
-      sugList.appendChild(li);
-    });
-  }
-
-  async function applyOne(s, to, li) {
-    const outcome = await DocumentAdapter.replace(s.from, s.occurrence, to, tracked());
-    if (outcome === true) {
-      logAudit(s.cat === 'spell' ? 'spelling' : 'word swap', s.from, to, tracked() ? 'applied (tracked)' : 'applied');
-      if (li) { li.style.transition = 'opacity .2s, transform .2s'; li.style.opacity = '0'; li.style.transform = 'translateX(8px)';
-        setTimeout(async () => { li.remove(); afterSugChange(); await scan(); }, 200); }
-      else { await scan(); }
-    } else if (outcome === 'stale') {
-      setStatus('', 'The document changed — rescanning.');
-      await scan();
-    }
-  }
-
-  // #6 Apply all: apply each swap, back-to-front by occurrence so earlier
-  // edits don't shift later targets. We re-scan once at the end.
-  applyAllBtn.addEventListener('click', () => withLock(async () => {
-    const items = lastResult.suggestions.slice();
-    applyAllBtn.disabled = true; applyAllBtn.textContent = 'Applying…';
-    // group by surface text, apply highest occurrence first
-    items.sort((a, b) => b.occurrence - a.occurrence);
-    for (const s of items) {
-      const to = chosen[s.id] || s.to;
-      const outcome = await DocumentAdapter.replace(s.from, s.occurrence, to, tracked());
-      if (outcome === true) logAudit(s.cat === 'spell' ? 'spelling' : 'word swap', s.from, to, tracked() ? 'applied (tracked)' : 'applied');
-    }
-    applyAllBtn.disabled = false; applyAllBtn.textContent = 'Apply all';
-    await scan();
-  }));
-
-  function afterSugChange() {
-    const remaining = sugList.children.length;
-    applyAllBtn.style.display = remaining ? '' : 'none';
-    if (remaining === 0) {
-      emptyState.style.display = '';
-      emptyState.querySelector('.big').textContent = 'All done';
-      emptyState.querySelector('.big').style.color = 'var(--apply)';
-      emptyState.querySelector('.sub').textContent = 'Every swap has been applied or ignored.';
-      setStatus('clean', 'Nothing left to review.');
-    } else setStatus('found', remaining + (remaining === 1 ? ' swap' : ' swaps') + ' left.');
-  }
-
-  /* ---------- flags (explained, #2) ---------- */
-  const FLAG_TITLES = { sentence:'Long sentence', passive:'Passive voice', doublneg:'Double negative',
-                        acronym:'Undefined acronym', number:'Number format', date:'Date format' };
-  function renderFlags(flags) {
-    flagList.innerHTML = '';
-    flagSection.style.display = flags.length ? '' : 'none';
-    if (!flags.length) return;
-    flags.forEach(f => {
-      const li = document.createElement('li');
-      li.className = 'flag-item';
-      const canFix = f.subtype === 'doublneg' && dnFix(f.from);
-      li.innerHTML =
-        '<div class="flag-top"><span class="flag-kind ' + f.subtype + '">' + FLAG_TITLES[f.subtype] + '</span>' +
-        '<span class="flag-text">' + esc(f.from) + (f.subtype==='sentence'?'…':'') + '</span></div>' +
-        '<p class="flag-why">' + esc(f.note) + '</p>' +
-        '<div class="flag-acts">' +
-          (canFix ? '<button class="mini apply" data-fix>Fix → ' + esc(dnFix(f.from)) + '</button>' : '') +
-          '<button class="mini" data-seen>Mark reviewed</button>' +
-        '</div>';
-      if (canFix) li.querySelector('[data-fix]').addEventListener('click', () => withLock(async () => {
-        const to = dnFix(f.from);
-        const outcome = await DocumentAdapter.replace(f.from, f.occurrence, to, tracked());
-        if (outcome === true) { logAudit('double negative', f.from, to, tracked()?'applied (tracked)':'applied'); li.remove(); await scan(); }
-        else if (outcome === 'stale') await scan();
-      }));
-      li.querySelector('[data-seen]').addEventListener('click', () => {
-        logAudit('flag: ' + f.subtype, f.from, '', 'reviewed, kept');
-        li.style.opacity = '.5'; li.querySelector('.flag-acts').remove();
-      });
-      flagList.appendChild(li);
-    });
-  }
-  // "not unreasonable" -> "reasonable" (only clean flips)
-  function dnFix(surf) {
-    const m = String(surf).match(/^not\s+un([a-z]+)$/i);
-    if (!m) return null;
-    const known = ['reasonable','likely','usual','common','important','clear','fair','able','aware','willing','necessary','acceptable','helpful','related','wise','popular','expected'];
-    let stem = m[1];
-    if (!known.includes(stem.toLowerCase())) return null;
-    if (/^[A-Z]/.test(surf)) stem = stem.charAt(0).toUpperCase() + stem.slice(1);
-    return stem;
-  }
-
-  /* ---------- audit log + CSV export (#16) ---------- */
-  function logAudit(type, from, to, status) {
-    auditLog.push({ when: new Date().toISOString(), type, from, to, status });
-  }
-  function exportCsv() {
-    const head = ['#','time','type','original','change','status'];
-    const rows = [head].concat(auditLog.map((r, i) => [i+1, r.when, r.type, r.from, r.to, r.status]));
-    const csv = rows.map(r => r.map(c => {
-      c = (c == null ? '' : String(c));
-      return /[",\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c;
-    }).join(',')).join('\r\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'Plainform-audit-log.csv';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-  exportCsvBtn.addEventListener('click', () => {
-    if (!auditLog.length) { setStatus('', 'No changes logged yet — apply or review something first.'); return; }
-    exportCsv();
-  });
-
-  /* ---------- controls ---------- */
-  function scheduleScan() {
-    if (!autoToggle.checked) return;
-    setStatus('scanning', 'Typing…');
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(scan, 700);
-  }
-  DocumentAdapter.onChange(scheduleScan);
-
-  autoToggle.addEventListener('change', () => {
-    if (autoToggle.checked) { ctlHint.textContent = 'Scanning automatically when you pause typing.'; scan(); }
-    else { clearTimeout(debounceTimer); ctlHint.textContent = 'Automatic scanning off. Use Scan now.'; setStatus('', 'Automatic scanning is off.'); }
-  });
-  scanBtn.addEventListener('click', scan);
-  if (commentsToggle) commentsToggle.addEventListener('change', () => {
-    if (commentsToggle.checked && DocumentAdapter.commentsSupported && !DocumentAdapter.commentsSupported()) {
-      // Honest feedback: this Word build can't add comments, so the hover
-      // explanations won't appear. Underlines and the sidebar still work.
-      setStatus('', 'Hover explanations need a newer Word version — underlines and the sidebar still work.');
-    }
-    scan();
-  });
-
-  /* ---------- AI assistant (Copilot) — off by default, opt-in to enable ----------
-     The toggle starts OFF. Turning it on shows a consent notice first; only an
-     explicit "Continue" actually enables the module. Turning it off immediately
-     disables the module and hides the AI section so no path can reach Copilot. */
-  let aiConfirmed = false;   // becomes true only after the user accepts the notice
-  aiToggle.checked = false;  // hard default OFF every session
-  CopilotModule.setEnabled(false);
-
-  aiToggle.addEventListener('change', () => {
-    if (aiToggle.checked) {
-      if (aiConfirmed) { enableAI(); }
-      else {
-        // show consent first; keep the module disabled until they accept
-        aiToggle.checked = false;     // revert visually until confirmed
-        aiConsent.style.display = '';
-      }
-    } else {
-      disableAI();
-    }
-  });
-  aiConsentYes.addEventListener('click', () => {
-    aiConfirmed = true;
-    aiConsent.style.display = 'none';
-    aiToggle.checked = true;
-    enableAI();
-  });
-  aiConsentNo.addEventListener('click', () => {
-    aiConsent.style.display = 'none';
-    aiToggle.checked = false;
-    disableAI();
-  });
-
-  function enableAI() {
-    CopilotModule.setEnabled(true);
-    aiSection.style.display = '';
-    aiBody.innerHTML = '<p class="ai-hint">Select a paragraph in your document, then choose ' +
-      '<b>Ask AI to review</b>. Only the passage you pick is sent — never the whole document, ' +
-      'and never automatically.</p>';
-    setStatus('', 'AI assistant on. Text is sent only when you click review.');
-  }
-  function disableAI() {
-    CopilotModule.setEnabled(false);
-    aiSection.style.display = 'none';
-    aiBody.innerHTML = '';
-    setStatus('', 'AI assistant off. Nothing is sent to Gemini.');
-  }
-
-  aiReviewBtn.addEventListener('click', async () => {
-    // double guard: never proceed unless the module is genuinely enabled
-    if (!CopilotModule.isEnabled()) { disableAI(); return; }
-    aiBody.innerHTML = '<p class="ai-hint">Reviewing the selected passage…</p>';
-    let passage = '';
-    try {
-      passage = await DocumentAdapter.getSelectionText();
-    } catch (e) { passage = ''; }
-    if (!passage || !passage.trim()) {
-      aiBody.innerHTML = '<p class="ai-hint">Select some text in the document first, then try again.</p>';
-      return;
-    }
-    try {
-      // Run Plainform's own rule-based checker on just this passage, so the
-      // AI is told exactly what's wrong here instead of guessing generically.
-      const localAnalysis = Engine.analyse(passage, ignoreSet);
-      const knownIssues = localAnalysis.marks.map(m => m.explain);
-      const result = await CopilotModule.review(passage, knownIssues);
-      renderAiResult(passage, result);
-    } catch (e) {
-      aiBody.innerHTML = '<p class="ai-hint">Could not get an AI suggestion. ' + esc(e.message) + '</p>';
-    }
-  });
-
-  function renderAiResult(passage, result) {
-    if (!result) { aiBody.innerHTML = '<p class="ai-hint">No suggestion returned.</p>'; return; }
-    const tag = result.placeholder
-      ? '<div class="ai-note">Placeholder mode — no text left your machine. Set the relay URL in the code to go live.</div>'
-      : '';
-    aiBody.innerHTML = tag +
-      '<div class="ai-card">' +
-        '<div class="ai-label">Suggested rewrite</div>' +
-        '<div class="ai-rewrite">' + esc(result.rewrite) + '</div>' +
-        (result.reason ? '<p class="ai-reason">' + esc(result.reason) + '</p>' : '') +
-        '<div class="ai-acts">' +
-          '<button class="mini" id="aiDismiss">Dismiss</button>' +
-          (result.placeholder ? '' : '<button class="mini apply" id="aiApply">Replace selection</button>') +
-        '</div>' +
-      '</div>';
-    const dismiss = $('aiDismiss'); if (dismiss) dismiss.addEventListener('click', () => { aiBody.querySelector('.ai-card').remove(); });
-    const apply = $('aiApply');
-    if (apply) apply.addEventListener('click', () => withLock(async () => {
-      await DocumentAdapter.replaceSelection(result.rewrite, tracked());
-      logAudit('AI rewrite', passage.slice(0, 40) + '…', '(rewritten)', tracked() ? 'applied (tracked)' : 'applied');
-      aiBody.innerHTML = '<p class="ai-hint">Applied. Select another paragraph to review more.</p>';
-      await scan();
-    }));
-  }
-
-  clearHlBtn.addEventListener('click', async () => { await DocumentAdapter.clearMarks(); setStatus('', 'Marks cleared.'); });
-
-  /* ---------- tabs: Editor / AI / Help ---------- */
-  const tabEditor = $('tabEditor'), tabAI = $('tabAI'), tabHelp = $('tabHelp'),
-        editorPanel = $('editorPanel'), aiPanel = $('aiPanel'), helpPanel = $('helpPanel');
-  function showTab(which) {
-    tabEditor.setAttribute('aria-selected', which === 'editor' ? 'true' : 'false');
-    tabAI.setAttribute('aria-selected', which === 'ai' ? 'true' : 'false');
-    tabHelp.setAttribute('aria-selected', which === 'help' ? 'true' : 'false');
-    // 'flex', not '' — both panels need to stay flex containers so their
-    // internal .scroll area gets a bounded, scrollable height. See the note
-    // in startPlainform() about why this matters.
-    editorPanel.style.display = which === 'editor' ? 'flex' : 'none';
-    aiPanel.style.display = which === 'ai' ? 'flex' : 'none';
-    helpPanel.style.display = which === 'help' ? '' : 'none';
-  }
-  tabEditor.addEventListener('click', () => showTab('editor'));
-  tabAI.addEventListener('click', () => showTab('ai'));
-  tabHelp.addEventListener('click', () => showTab('help'));
-
-  /* ---------- theme ---------- */
-  const themeBtn = $('themeBtn');
-  let dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  function applyTheme() { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); themeBtn.textContent = dark ? '☀' : '◐'; }
-  if (dark) applyTheme();
-  themeBtn.addEventListener('click', () => { dark = !dark; applyTheme(); });
-
-  scan();
-}
-
-Office.onReady((info) => {
-  if (info.host === Office.HostType.Word) startPlainform();
-  else {
-    const boot = document.getElementById('boot');
-    boot.className = 'boot err';
-    boot.textContent = 'Plainform runs in Microsoft Word. This host isn’t Word.';
-  }
-});
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { font-family: var(--sans); color: var(--ink); background: var(--panel);
+    line-height: 1.5; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; height: 100vh; }
+
+  .pane-head { border-bottom: 1px solid var(--rule); padding: 13px 16px 11px; display: flex; align-items: flex-start; gap: 10px; }
+  .pane-mark { font-family: var(--serif); font-weight: 600; font-size: 18px; line-height: 1; color: #fff;
+    background: var(--gov); width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; flex-shrink: 0; margin-top: 1px; }
+  .pane-title h1 { font-family: var(--serif); font-size: 16px; font-weight: 600; margin: 0; }
+  .pane-title p { font-size: 11px; color: var(--ink-soft); margin: 2px 0 0; line-height: 1.4; }
+  .pane-theme { margin-left: auto; border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft);
+    width: 30px; height: 30px; border-radius: 7px; cursor: pointer; font-size: 14px; flex-shrink: 0; }
+  .pane-theme:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+  .boot { padding: 10px 16px; font-size: 11.5px; color: var(--ink-soft); background: var(--gov-soft); border-bottom: 1px solid var(--rule); }
+  .boot.err { color: #8a2b2b; background: #f7e9e9; }
+
+  .tabs-row { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--rule); background: var(--subtle); }
+  .tab { font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 10px 14px; border: none;
+    background: transparent; color: var(--ink-soft); cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--gov); border-bottom-color: var(--gov); }
+  .tab:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); border-radius: 6px; }
+
+  .controls { padding: 12px 16px; border-bottom: 1px solid var(--rule); }
+  .ctl-row { display: flex; align-items: center; gap: 10px; }
+  .toggle { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-size: 13px; color: var(--ink); user-select: none; }
+  .switch { position: relative; width: 38px; height: 22px; flex-shrink: 0; }
+  .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .switch .track { position: absolute; inset: 0; background: var(--line); border-radius: 22px; transition: background .15s; }
+  .switch .knob { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #fff;
+    border-radius: 50%; transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+  .switch input:checked + .track { background: var(--gov); }
+  .switch input:checked + .track + .knob { transform: translateX(16px); }
+  .switch input:focus-visible + .track { box-shadow: 0 0 0 3px var(--ring); }
+  .ctl-hint { font-size: 11px; color: var(--ink-soft); margin: 7px 0 0; line-height: 1.45; }
+  .scan-btn { margin-left: auto; font-family: var(--sans); font-size: 12.5px; font-weight: 500; padding: 7px 13px;
+    border-radius: 7px; border: 1px solid var(--gov); background: var(--gov); color: #fff; cursor: pointer; white-space: nowrap; }
+  .scan-btn:hover { background: var(--gov-hover); }
+  .scan-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+
+  .ctl-row2 { display: flex; align-items: center; gap: 14px; margin-top: 11px; flex-wrap: wrap; }
+  .btn-row { display: flex; gap: 7px; margin-top: 11px; flex-wrap: wrap; }
+  .hl-btn { font-family: var(--sans); font-size: 11.5px; padding: 5px 10px; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft); cursor: pointer; }
+  .hl-btn:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 9px 16px; border-bottom: 1px solid var(--rule);
+    background: var(--subtle); font-size: 10.5px; color: var(--ink-soft); }
+  .legend .leg { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .sw { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .legend .sw.swap  { background: #7fd8d8; }   /* turquoise, softened for the legend */
+  .legend .sw.spell { background: #fff07a; }   /* yellow */
+  .legend .sw.flag  { background: #a6e59a; }   /* bright green, softened */
+
+  .status { padding: 9px 16px; font-size: 11.5px; color: var(--ink-soft); border-bottom: 1px solid var(--rule);
+    background: var(--subtle); display: flex; align-items: center; gap: 7px; min-height: 36px; }
+  .status .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-soft); flex-shrink: 0; transition: background .2s; }
+  .status.scanning .live-dot { background: var(--suggest); animation: pulse 1s infinite; }
+  .status.clean .live-dot { background: var(--apply); } .status.found .live-dot { background: var(--suggest); }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+  .scroll { flex: 1; overflow-y: auto; }
+  /* Backstop: #editorPanel must be a flex container for .scroll above to get
+     a bounded, scrollable height (otherwise content grows forever and pushes
+     the footer off-screen). taskpane.js sets this inline too; this rule is
+     just insurance in case that ever doesn't run. */
+  #editorPanel[style*="flex"], #aiPanel[style*="flex"] { display: flex; }
+
+  .applyall-bar { padding: 9px 16px; border-bottom: 1px solid var(--rule); display: flex; }
+  .applyall { font-family: var(--sans); font-size: 12.5px; font-weight: 600; padding: 8px 14px; border-radius: 7px;
+    border: 1px solid var(--apply); background: var(--apply); color: #fff; cursor: pointer; width: 100%; }
+  .applyall:hover { filter: brightness(1.06); } .applyall:disabled { opacity: .6; cursor: default; }
+
+  .sug-list, .flag-list { list-style: none; margin: 0; padding: 4px 0 8px; }
+  .sug { padding: 12px 16px; border-bottom: 1px solid var(--rule); }
+  .sug:hover { background: var(--subtle); }
+  .cat-tag { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .04em;
+    padding: 2px 6px; border-radius: 4px; margin-right: 8px; vertical-align: 2px; }
+  .cat-tag.swap { background: var(--apply-bg); color: var(--apply); }
+  .cat-tag.spell { background: var(--au-bg); color: var(--au); }
+  .sug-change { font-family: var(--serif); font-size: 15px; line-height: 1.5; }
+  .sug-from { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--strike); }
+  .sug-arrow { color: var(--ink-soft); margin: 0 8px; } .sug-to { color: var(--apply); font-weight: 600; }
+  .sug-note { font-size: 11.5px; color: var(--ink-soft); margin: 5px 0 0; line-height: 1.45; }
+  .sug-acts, .flag-acts { display: flex; gap: 7px; margin-top: 10px; align-items: center; }
+  .alt-pick { margin-right: auto; display: flex; gap: 5px; flex-wrap: wrap; }
+  .chip { font-family: var(--sans); font-size: 11px; padding: 3px 9px; border-radius: 20px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft); cursor: pointer; }
+  .chip:hover { border-color: var(--apply); color: var(--apply); }
+  .chip[aria-pressed="true"] { background: var(--apply-bg); border-color: var(--apply); color: var(--apply); font-weight: 600; }
+  .mini { font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft); cursor: pointer; }
+  .mini:hover { border-color: var(--ink-soft); color: var(--ink); }
+  .mini.apply { background: var(--apply); border-color: var(--apply); color: #fff; }
+  .mini.apply:hover { filter: brightness(1.06); }
+
+  .flag-section { border-top: 8px solid var(--subtle); }
+  .flag-head { padding: 11px 16px 4px; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--ink-soft); }
+  .flag-head .sub { display: block; font-family: var(--sans); text-transform: none; letter-spacing: 0; font-size: 11px; margin-top: 3px; color: var(--ink-soft); }
+  .flag-item { padding: 11px 16px; border-bottom: 1px solid var(--rule); }
+  .flag-top { display: flex; align-items: center; gap: 8px; }
+  .flag-kind { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .04em;
+    padding: 2px 6px; border-radius: 4px; background: var(--flag-bg); color: var(--flag); white-space: nowrap; }
+  .flag-kind.passive, .flag-kind.sentence { background: #e2eef7; color: #2b6cb0; }
+  [data-theme="dark"] .flag-kind.passive, [data-theme="dark"] .flag-kind.sentence { background: #1f3340; color: #6cbce8; }
+  .flag-kind.acronym { background: var(--suggest-bg); color: var(--suggest); }
+  .flag-text { font-family: var(--serif); font-size: 13.5px; color: var(--ink); }
+  .flag-why { font-size: 11.5px; color: var(--ink-soft); margin: 6px 0 0; line-height: 1.45; }
+
+  .empty { padding: 34px 22px; text-align: center; color: var(--ink-soft); }
+  .empty .big { font-family: var(--serif); font-size: 15px; color: var(--ink-soft); margin: 0 0 5px; }
+  .empty .sub { font-size: 12.5px; margin: 0; line-height: 1.5; }
+
+  .help { padding: 18px 18px 30px; overflow-y: auto; }
+  .help h2 { font-family: var(--serif); font-size: 18px; margin: 0 0 8px; color: var(--ink); }
+  .help h3 { font-family: var(--serif); font-size: 14.5px; margin: 20px 0 8px; color: var(--ink); }
+  .help p { font-size: 12.5px; line-height: 1.6; color: var(--ink-soft); margin: 0 0 10px; }
+  .help ul { font-size: 12.5px; line-height: 1.55; color: var(--ink-soft); padding-left: 18px; margin: 0 0 10px; }
+  .help li { margin: 5px 0; }
+  .help .hl-mark { font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+  .help .hl-mark.swap { background: #d6f5f5; color: #1a6b6b; } .help .hl-mark.spell { background: #fff7d6; color: #8a6d0c; }
+  .help .hl-mark.flag { background: #e2f5df; color: #2f7a2f; }
+  .help .note { font-size: 12px; line-height: 1.55; background: var(--gov-soft); border-left: 3px solid var(--gov);
+    border-radius: 0 6px 6px 0; padding: 10px 13px; color: var(--ink); margin: 0 0 10px; }
+  .help b { color: var(--ink); }
+
+  /* AI assistant + consent */
+  .ai-consent { margin-top: 11px; padding: 11px 12px; border: 1px solid var(--suggest);
+    background: var(--suggest-bg); border-radius: 8px; }
+  .ai-consent p { font-size: 11.5px; line-height: 1.5; margin: 0 0 7px; color: var(--ink); }
+  .ai-consent p:last-of-type { margin-bottom: 9px; }
+  .consent-acts { display: flex; gap: 7px; justify-content: flex-end; }
+  .ai-section { border-top: 8px solid var(--subtle); }
+  .ai-head { padding: 11px 16px 4px; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--gov); }
+  .ai-head .sub { display: block; font-family: var(--sans); text-transform: none; letter-spacing: 0;
+    font-size: 11px; margin-top: 3px; color: var(--ink-soft); }
+  .ai-controls { padding: 8px 16px 4px; }
+  .ai-review { font-family: var(--sans); font-size: 12.5px; font-weight: 600; padding: 8px 14px; border-radius: 7px;
+    border: 1px solid var(--gov); background: var(--gov); color: #fff; cursor: pointer; width: 100%; }
+  .ai-review:hover { background: var(--gov-hover); }
+  .ai-body { padding: 6px 16px 14px; }
+  .ai-hint { font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin: 6px 0; }
+  .ai-note { font-size: 11px; color: var(--suggest); background: var(--suggest-bg); border-radius: 6px;
+    padding: 7px 9px; margin: 6px 0 10px; line-height: 1.45; }
+  .ai-card { border: 1px solid var(--rule); border-radius: 8px; padding: 11px 12px; background: var(--subtle); }
+  .ai-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .04em; color: var(--gov); margin-bottom: 5px; }
+  .ai-rewrite { font-family: var(--serif); font-size: 14px; line-height: 1.55; color: var(--ink); }
+  .ai-reason { font-size: 11.5px; color: var(--ink-soft); margin: 7px 0 0; line-height: 1.45; font-style: italic; }
+  .ai-acts { display: flex; gap: 7px; margin-top: 10px; justify-content: flex-end; }
+
+  .pane-foot { border-top: 1px solid var(--rule); padding: 9px 16px; font-size: 10.5px; color: var(--ink-soft); line-height: 1.5; background: var(--subtle); }
+  .pane-foot b { color: var(--ink); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+  <div class="pane-head">
+    <div class="pane-mark">P</div>
+    <div class="pane-title">
+      <h1>Plainform</h1>
+      <p>Plain language to the Australian Government Style Manual</p>
+    </div>
+    <button class="pane-theme" id="themeBtn" aria-label="Toggle light or dark mode" title="Light / dark">◐</button>
+  </div>
+
+  <div class="boot" id="boot">Connecting to Word…</div>
+
+  <div class="tabs-row" id="tabsRow" role="tablist" style="display:none">
+    <button class="tab" id="tabEditor" role="tab" aria-selected="true">Editor</button>
+    <button class="tab" id="tabAI" role="tab" aria-selected="false">AI</button>
+    <button class="tab" id="tabHelp" role="tab" aria-selected="false">Help</button>
+  </div>
+
+  <div id="editorPanel" style="display:none; flex:1; min-height:0; flex-direction:column;">
+    <div class="controls" id="controls" style="display:none">
+      <div class="ctl-row">
+        <label class="toggle">
+          <span class="switch"><input type="checkbox" id="autoToggle" checked><span class="track"></span><span class="knob"></span></span>
+          <span>Scan as I type</span>
+        </label>
+        <button class="scan-btn" id="scanBtn">Scan now</button>
+      </div>
+      <p class="ctl-hint" id="ctlHint">Scanning automatically when you pause typing.</p>
+      <div class="ctl-row2">
+        <label class="toggle">
+          <span class="switch"><input type="checkbox" id="trackToggle"><span class="track"></span><span class="knob"></span></span>
+          <span>Apply as tracked changes</span>
+        </label>
+      </div>
+      <div class="ctl-row2">
+        <label class="toggle">
+          <span class="switch"><input type="checkbox" id="commentsToggle"><span class="track"></span><span class="knob"></span></span>
+          <span>Show explanations on words</span>
+        </label>
+      </div>
+      <div class="btn-row">
+        <button class="hl-btn" id="clearHlBtn">Clear marks</button>
+        <button class="hl-btn" id="exportCsvBtn">Export audit log (CSV)</button>
+      </div>
+    </div>
+
+    <div class="legend" id="legend" style="display:none">
+      <span class="leg"><i class="sw swap"></i>word swap</span>
+      <span class="leg"><i class="sw spell"></i>spelling</span>
+      <span class="leg"><i class="sw flag"></i>sentence / acronym / number</span>
+    </div>
+
+    <div class="status" id="status" style="display:none">
+      <span class="live-dot"></span><span id="statusText">Ready.</span>
+    </div>
+
+    <div class="applyall-bar"><button class="applyall" id="applyAllBtn" style="display:none">Apply all swaps</button></div>
+
+    <div class="scroll">
+      <ul class="sug-list" id="sugList"></ul>
+      <div class="empty" id="emptyState" style="display:none">
+        <p class="big">No suggestions yet</p>
+        <p class="sub">As you write, Plainform lists word and spelling swaps here for you to apply.</p>
+      </div>
+
+      <div class="flag-section" id="flagSection" style="display:none">
+        <div class="flag-head">Needs your judgement
+          <span class="sub">Pointed out, not auto-changed — these depend on your meaning.</span>
+        </div>
+        <ul class="flag-list" id="flagList"></ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="aiPanel" style="display:none; flex:1; min-height:0; flex-direction:column;">
+    <div class="scroll">
+      <div class="controls" style="border-bottom:1px solid var(--rule)">
+        <div class="ctl-row2" style="margin-top:0">
+          <label class="toggle">
+            <span class="switch"><input type="checkbox" id="aiToggle"><span class="track"></span><span class="knob"></span></span>
+            <span>AI assistant (Gemini)</span>
+          </label>
+        </div>
+        <p class="ctl-hint">Off by default. Select a paragraph in your document, turn this on, then ask for a review — only that passage is ever sent, and only when you click.</p>
+        <div class="ai-consent" id="aiConsent" style="display:none">
+          <p><b>Turn on AI assistant?</b></p>
+          <p>This sends the passage you choose to review to <b>Google Gemini</b> (via your relay).
+             Your text leaves the offline tool. Plainform sends nothing unless this is on
+             and you click review on a passage.</p>
+          <div class="consent-acts">
+            <button class="mini" id="aiConsentNo">Cancel</button>
+            <button class="mini apply" id="aiConsentYes">Continue</button>
+          </div>
+        </div>
+      </div>
+      <div class="ai-section" id="aiSection" style="display:none">
+        <div class="ai-head">AI assistant
+          <span class="sub">On-demand rewrites from Google Gemini, aware of the issues Plainform already found in your selection.</span>
+        </div>
+        <div class="ai-controls">
+          <button class="ai-review" id="aiReviewBtn">Ask AI to review selection</button>
+        </div>
+        <div class="ai-body" id="aiBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help" id="helpPanel" style="display:none; flex:1; min-height:0;">
+    <h2>How Plainform works</h2>
+    <p>Plainform checks your Word text against the Australian Government Style Manual and
+       runs entirely inside Word — your text is analysed here and isn’t sent anywhere.</p>
+
+    <h3>What it does for you</h3>
+    <ul>
+      <li><b>Word swaps</b> — plain-language replacements with the tense kept right
+        (<i>commencing → starting</i>). Click <b>Apply</b>.</li>
+      <li><b>Spelling</b> — US → Australian (<i>organize → organise</i>). Now clickable too.</li>
+      <li><b>Apply all swaps</b> — accept every word and spelling swap at once.</li>
+    </ul>
+
+    <h3>What it points out (your call)</h3>
+    <ul>
+      <li><b>Long sentences</b> and <b>passive voice</b> — clearer rewritten, but only you can keep the meaning.</li>
+      <li><b>Double negatives</b> — <i>not unreasonable</i>; offered a one-click positive flip where it’s clean.</li>
+      <li><b>Undefined acronyms</b> — flagged so you define them on first use.</li>
+      <li><b>Numbers &amp; dates</b> — spell out one–nine, use <i>3 April 2025</i> not <i>3/4/2025</i>.</li>
+    </ul>
+
+    <h3>Marks in the document</h3>
+    <p>Issues are highlighted in light colours:
+       <span class="hl-mark swap">turquoise</span> word swap &nbsp;
+       <span class="hl-mark spell">yellow</span> spelling &nbsp;
+       <span class="hl-mark flag">green</span> sentence, acronym or number.</p>
+    <p class="note">Turn on <b>Show explanations on words</b> and each marked word gets a Word
+       comment — hover or click the word in the document to see the issue and the recommended
+       change. (Needs a newer Word version; if it’s unavailable the highlights still work.)</p>
+    <p>Use <b>Clear marks</b> to remove the highlights and Plainform’s comments at any time.</p>
+
+    <h3>AI assistant (Gemini)</h3>
+    <p class="note">Open the <b>AI</b> tab at the top to use this. <b>Off by default.</b> Plainform is
+       offline and sends nothing anywhere — <i>unless</i> you turn on the AI assistant <b>and</b>
+       click review on a passage. Turning it on
+       asks you to confirm first. When on, only the paragraph you select is sent to Google Gemini
+       (through your own relay, which holds the key) — never the whole document, and never as you type.
+       Turn it off and nothing can be sent. <b>Note:</b> Google’s free tier may use submitted text to
+       improve their models, so use AI mode for non-sensitive text only.</p>
+
+    <h3>Tracked changes</h3>
+    <p class="note">Turn on <b>Apply as tracked changes</b> and every swap you apply
+       becomes a real Word tracked change a reviewer can accept or reject — useful for
+       documents that go through review.</p>
+
+    <h3>Audit log</h3>
+    <p><b>Export audit log (CSV)</b> saves a row-by-row record of every change you applied,
+       ignored or reviewed — handy for a workpaper or to show a reviewer what was altered and why.</p>
+
+    <h3>Tips</h3>
+    <ul>
+      <li>Press <b>Scan now</b> any time, or leave <b>Scan as I type</b> on.</li>
+      <li><b>Ignore</b> on a suggestion hides that word for the rest of the session.</li>
+    </ul>
+    <p style="margin-top:16px; font-size:11px;">For help or to report a word handled wrongly,
+       contact Thomas Coleman. Independent tool — not affiliated with the Australian Government.</p>
+  </div>
+
+  <div class="pane-foot">
+    <b>Plainform v2 (Word).</b> Runs locally — your text is analysed in Word, not sent anywhere.
+  </div>
+
+  <!-- CACHE-BUSTING: bump this number (?v=N) every single time you update
+       taskpane.js. Word's task pane caches files very aggressively — without
+       a changing version tag here, it can keep showing an old copy of the
+       script indefinitely, even after you've replaced the file on the server. -->
+  <script src="taskpane.js?v=3"></script>
+</body>
+</html>
