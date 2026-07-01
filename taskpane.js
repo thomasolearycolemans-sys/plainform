@@ -10,16 +10,15 @@ const AU_SPELLING_DATA = {"organize":"organise","organized":"organised","organiz
  *  PART 1 — DocumentAdapter : the seam to real Word (Office.js).        *
  * ==================================================================== */
 const DocumentAdapter = (function () {
-  // Soft, muted underline colours (custom hex — Word allows any RGB for underlines,
-  // unlike highlight blocks which are limited to a few harsh named colours).
-  const UL = {
-    swap:  '#c2576b',   // muted rose
-    spell: '#b08423',   // muted amber
-    flag:  '#5a7da6'    // muted slate blue
+  // Word highlights only accept a fixed set of NAMED colours (no custom hex,
+  // no pastels — Word snaps any other value to the nearest named one). So we
+  // pick the gentlest of the available set and give the SOFTEST to the most
+  // frequent mark. Deliberately avoids the harsh pink/red.
+  const HL = {
+    swap:  'Turquoise',   // calmest neutral — carries the most-common mark
+    spell: 'Yellow',      // familiar, naturally light spelling cue
+    flag:  'BrightGreen'  // readable but not alarming (no red/pink)
   };
-  // Underline STYLE per kind: swaps/spelling get a quiet dotted line,
-  // flags get a wave (the familiar "something to look at" cue).
-  const ULSTYLE = { swap: 'Dotted', spell: 'Dotted', flag: 'Wave' };
 
   async function getText() {
     return Word.run(async (context) => {
@@ -79,11 +78,11 @@ const DocumentAdapter = (function () {
   // a Word comment carrying the issue + recommended change, so hovering/clicking
   // the word in the document shows the explanation in Word's own bubble.
   async function markup(markList, withComments) {
-    // Underlines first — this is the widely-supported, must-always-work part.
+    // Highlights first — the widely-supported, must-always-work part.
     await Word.run(async (context) => {
       const byText = {};
       markList.forEach(mk => { (byText[mk.from] = byText[mk.from] || []).push(mk); });
-      clearUnderlinesIn(context.document.body);
+      clearHighlightsIn(context.document.body);
       const searches = [];
       Object.keys(byText).forEach(text => {
         const r = context.document.body.search(text, { matchCase: true, matchWholeWord: true });
@@ -94,9 +93,7 @@ const DocumentAdapter = (function () {
       searches.forEach(({ text, results }) => {
         byText[text].forEach(mk => {
           if (mk.occurrence < results.items.length) {
-            const range = results.items[mk.occurrence];
-            range.font.underline = ULSTYLE[mk.kind] || 'Dotted';
-            range.font.underlineColor = UL[mk.kind] || UL.flag;
+            results.items[mk.occurrence].font.highlightColor = HL[mk.kind] || HL.flag;
           }
         });
       });
@@ -143,9 +140,9 @@ const DocumentAdapter = (function () {
     } catch (e) { return false; }
   }
 
-  function clearUnderlinesIn(body) {
-    body.font.underline = 'None';
-    body.font.highlightColor = null;   // also clears any leftover highlight from older versions
+  function clearHighlightsIn(body) {
+    body.font.highlightColor = null;
+    body.font.underline = 'None';   // also clears underlines left by the previous version
   }
 
   // Delete only Plainform's own comments (by our prefix). Guarded: if the
@@ -172,7 +169,7 @@ const DocumentAdapter = (function () {
 
   async function clearMarks() {
     // Underlines always clear; comment clearing is separate and guarded.
-    await Word.run(async (context) => { clearUnderlinesIn(context.document.body); await context.sync(); });
+    await Word.run(async (context) => { clearHighlightsIn(context.document.body); await context.sync(); });
     if (isCommentsApiAvailable()) {
       try { await Word.run(async (context) => { await deletePlainformComments(context); }); } catch (e) {}
     }
