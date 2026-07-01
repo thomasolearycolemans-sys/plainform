@@ -353,6 +353,10 @@
     <b>Plainform v2 (Word).</b> Runs locally — your text is analysed in Word, not sent anywhere.
   </div>
 
-  <script src="taskpane.js"></script>
+  <!-- CACHE-BUSTING: bump this number (?v=N) every single time you update
+       taskpane.js. Word's task pane caches files very aggressively — without
+       a changing version tag here, it can keep showing an old copy of the
+       script indefinitely, even after you've replaced the file on the server. -->
+  <script src="taskpane.js?v=2"></script>
 </body>
 </html>
