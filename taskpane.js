@@ -405,7 +405,7 @@ const CopilotModule = (function () {
   // >>> EDIT THIS to your Cloudflare Worker URL (see the setup guide). <<<
   // While it still contains 'REPLACE', the module runs in safe DEMO mode
   // and never makes a network call.
-  const RELAY_URL = https://plainform-relay.thomas-oleary-coleman-s.workers.dev/review;
+  const RELAY_URL = "https://plainform-relay.thomas-oleary-coleman-s.workers.dev/review";
 
   let ENABLED = false;   // mirrors the toggle; the controller sets this explicitly
   function setEnabled(on) { ENABLED = !!on; }
