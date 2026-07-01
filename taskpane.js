@@ -124,7 +124,7 @@ const DocumentAdapter = (function () {
 
     // Comments second, in a SEPARATE, fully-guarded pass. The comment APIs
     // (getComments / insertComment / contentRange) are newer and may be missing;
-    // if anything here fails it must NOT affect the highlights above or the
+    // if anything here fails it must NOT affect the underlines above or the
     // sidebar. So we swallow errors and simply skip comments on older builds.
     if (!withComments) return;
     if (!isCommentsApiAvailable()) return;
@@ -164,7 +164,7 @@ const DocumentAdapter = (function () {
 
   function clearHighlightsIn(body) {
     body.font.highlightColor = null;
-    body.font.underline = 'None';   // matches the known-working baseline exactly
+    body.font.underline = 'None';   // also clears underlines left by the previous version
   }
 
   // Delete only Plainform's own comments (by our prefix). Guarded: if the
@@ -370,34 +370,17 @@ const Engine = (function () {
       marks.push(mk); flags.push(mk);
     }
 
-    // long sentences — highlight the WHOLE sentence, but show a short lead in the sidebar.
-    // Common abbreviations end in a period without actually ending the sentence
-    // (e.g. "s. 5", "cl. 3", "Pty Ltd.", "e.g.", "etc."), which are routine in
-    // government/legal text. Without accounting for these, a genuinely long
-    // sentence gets chopped into short fragments at each abbreviation and never
-    // gets flagged. So: split into rough sentence chunks first, then re-join any
-    // chunk that ends with a known abbreviation onto the next one before counting.
-    const ABBREV_END = /\b(s|cl|reg|no|pty|ltd|cwlth|dept|govt|assn|inc|corp|approx|e\.g|i\.e|etc|mr|mrs|ms|dr|prof)\.$/i;
-    let roughRe = /[^.!?]+[.!?]+/g, rm;
-    let chunks = [];
-    while ((rm = roughRe.exec(rawText)) !== null) chunks.push({ text: rm[0], index: rm.index });
-    let merged = [];
-    for (let i = 0; i < chunks.length; i++) {
-      if (merged.length && ABBREV_END.test(merged[merged.length - 1].text.trim())) {
-        merged[merged.length - 1].text += chunks[i].text;   // glue onto the previous chunk
-      } else {
-        merged.push({ text: chunks[i].text, index: chunks[i].index });
-      }
-    }
-    merged.forEach(chunk => {
-      const whole = chunk.text.trim();
+    // long sentences — highlight the WHOLE sentence, but show a short lead in the sidebar
+    let sentRe = /[^.!?]+[.!?]+/g, sm;
+    while ((sm = sentRe.exec(rawText)) !== null) {
+      const whole = sm[0].trim();
       const words = whole.split(/\s+/).filter(Boolean).length;
       if (words > 25) {
         const lead = whole.split(/\s+/).slice(0, 6).join(' ');
-        addFlag(lead, chunk.index, chunk.index + whole.length, 'sentence',
+        addFlag(lead, sm.index, sm.index + whole.length, 'sentence',
                 words + ' words (AGSM suggests ~25 max).', whole);
       }
-    });
+    }
     // passive voice
     const pvRe = /\b(is|are|was|were|be|been|being)\s+(\w+ed|made|held|given|taken|sent|paid|built|shown)\b/gi;
     let pv;
@@ -446,20 +429,10 @@ const Engine = (function () {
     // small digits 1–9 used as a standalone count before a word (e.g. "5 applicants").
     // Deliberately conservative — bare digits are too ambiguous to flag in general
     // (years, list numbers, references), so we require "<digit> <lowercase word>".
-    // EXCEPTION: AGSM (like most style guides) prefers numerals — not spelled-out
-    // words — for units, times, money, ages, and similar, even under ten. So "5 km"
-    // and "3 pm" are correct as written and should NOT be flagged.
-    const UNIT_WORDS = new Set([
-      'km','kg','mg','ml','cm','mm','m','g','l','pm','am',
-      'years','year','yrs','months','month','weeks','week',
-      'days','day','hours','hour','hrs','minutes','mins','min',
-      'seconds','secs','sec','percent','pc'
-    ]);
-    const numRe = /\b([1-9])\s+([a-z]{2,})/g; let nm;
+    const numRe = /\b([1-9])\s+([a-z]{3,})/g; let nm;
     while ((nm = numRe.exec(masked)) !== null) {
       const s = nm.index, e = s + 1;
       if (spanTaken(s, e)) continue;
-      if (UNIT_WORDS.has(nm[2].toLowerCase())) continue;   // "5 km", "3 pm" etc. are correct as-is
       addFlag(nm[1], s, e, 'number', 'AGSM: spell out one–nine (“' + nm[1] + '” → “' + SMALL_NUMS[nm[1]] + '”).');
     }
 
@@ -502,7 +475,7 @@ const CopilotModule = (function () {
   function isEnabled() { return ENABLED; }
   function isLive() { return RELAY_URL.indexOf('REPLACE') === -1; }
 
-  async function callAi(passage, knownIssues) {
+  async function callAi(passage) {
     if (!ENABLED) throw new Error('AI is disabled — no text may be sent.');
 
     // DEMO mode: relay not configured yet → no network, nothing leaves the machine.
@@ -515,15 +488,11 @@ const CopilotModule = (function () {
       };
     }
 
-    // LIVE mode: send the chosen passage AND the specific issues Plainform's
-    // own checker already found in it, so the AI fixes exactly what's wrong
-    // here rather than guessing generically. Only the passage and a short
-    // list of plain-English issue descriptions are sent — never the whole
-    // document, and never automatically.
+    // LIVE mode: send ONLY the chosen passage to our relay, which adds the key.
     const res = await fetch(RELAY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ passage, known_issues: (knownIssues || []).slice(0, 20) })
+      body: JSON.stringify({ passage })
     });
     if (!res.ok) {
       let msg = 'AI request failed (' + res.status + ').';
@@ -536,10 +505,10 @@ const CopilotModule = (function () {
 
   // The ONLY entry point the controller uses. Guarded so it cannot run
   // unless explicitly enabled — a structural backstop, not just a UI check.
-  async function review(passage, knownIssues) {
+  async function review(passage) {
     if (!ENABLED) throw new Error('AI is disabled.');
     if (!passage || !passage.trim()) return null;
-    return callAi(passage, knownIssues);
+    return callAi(passage);
   }
 
   return { setEnabled, isEnabled, isLive, review };
@@ -563,35 +532,11 @@ function startPlainform() {
 
   $('boot').style.display = 'none';
   ['controls','legend','status','tabsRow'].forEach(id => { const el = $(id); if (el) el.style.display = ''; });
-  // 'flex' (not '') is required here: editorPanel's own children rely on it
-  // being a flex container so the middle .scroll area gets a bounded height
-  // and scrolls internally, keeping the footer pinned at the bottom instead
-  // of being pushed off-screen by however much content is in the sidebar.
-  $('editorPanel').style.display = 'flex';
+  $('editorPanel').style.display = '';
 
   let chosen = {};
   let debounceTimer = null;
   let scanning = false;
-  let mutating = false;   // true while an Apply/Ignore/Fix action is being applied to the document
-
-  // Runs `fn` only if nothing else is currently editing the document. This
-  // stops two "Apply" clicks in quick succession from opening two separate
-  // Word edit sessions at the same time, which could otherwise interfere
-  // with each other. While locked, the whole sidebar is dimmed and ignores
-  // clicks, so it's clear to the user why nothing is happening for a moment.
-  async function withLock(fn) {
-    if (mutating) return;
-    mutating = true;
-    sugList.style.opacity = '.6'; sugList.style.pointerEvents = 'none';
-    flagList.style.opacity = '.6'; flagList.style.pointerEvents = 'none';
-    try {
-      await fn();
-    } finally {
-      mutating = false;
-      sugList.style.opacity = ''; sugList.style.pointerEvents = '';
-      flagList.style.opacity = ''; flagList.style.pointerEvents = '';
-    }
-  }
   let lastResult = { suggestions: [], marks: [], flags: [] };
   const ignoreSet = new Set();         // #8-lite: words the user says "ignore" to
   const auditLog = [];                 // every action, for CSV export (#16)
@@ -674,8 +619,8 @@ function startPlainform() {
           li.querySelector('[data-to]').textContent = chip.dataset.opt;
         });
       });
-      li.querySelector('[data-apply]').addEventListener('click', () => {
-        withLock(() => applyOne(s, chosen[s.id], li));
+      li.querySelector('[data-apply]').addEventListener('click', async () => {
+        await applyOne(s, chosen[s.id], li);
       });
       li.querySelector('[data-ignore]').addEventListener('click', () => {
         ignoreSet.add(s.from.toLowerCase());
@@ -701,7 +646,7 @@ function startPlainform() {
 
   // #6 Apply all: apply each swap, back-to-front by occurrence so earlier
   // edits don't shift later targets. We re-scan once at the end.
-  applyAllBtn.addEventListener('click', () => withLock(async () => {
+  applyAllBtn.addEventListener('click', async () => {
     const items = lastResult.suggestions.slice();
     applyAllBtn.disabled = true; applyAllBtn.textContent = 'Applying…';
     // group by surface text, apply highest occurrence first
@@ -713,7 +658,7 @@ function startPlainform() {
     }
     applyAllBtn.disabled = false; applyAllBtn.textContent = 'Apply all';
     await scan();
-  }));
+  });
 
   function afterSugChange() {
     const remaining = sugList.children.length;
@@ -746,12 +691,12 @@ function startPlainform() {
           (canFix ? '<button class="mini apply" data-fix>Fix → ' + esc(dnFix(f.from)) + '</button>' : '') +
           '<button class="mini" data-seen>Mark reviewed</button>' +
         '</div>';
-      if (canFix) li.querySelector('[data-fix]').addEventListener('click', () => withLock(async () => {
+      if (canFix) li.querySelector('[data-fix]').addEventListener('click', async () => {
         const to = dnFix(f.from);
         const outcome = await DocumentAdapter.replace(f.from, f.occurrence, to, tracked());
         if (outcome === true) { logAudit('double negative', f.from, to, tracked()?'applied (tracked)':'applied'); li.remove(); await scan(); }
         else if (outcome === 'stale') await scan();
-      }));
+      });
       li.querySelector('[data-seen]').addEventListener('click', () => {
         logAudit('flag: ' + f.subtype, f.from, '', 'reviewed, kept');
         li.style.opacity = '.5'; li.querySelector('.flag-acts').remove();
@@ -875,11 +820,7 @@ function startPlainform() {
       return;
     }
     try {
-      // Run Plainform's own rule-based checker on just this passage, so the
-      // AI is told exactly what's wrong here instead of guessing generically.
-      const localAnalysis = Engine.analyse(passage, ignoreSet);
-      const knownIssues = localAnalysis.marks.map(m => m.explain);
-      const result = await CopilotModule.review(passage, knownIssues);
+      const result = await CopilotModule.review(passage);
       renderAiResult(passage, result);
     } catch (e) {
       aiBody.innerHTML = '<p class="ai-hint">Could not get an AI suggestion. ' + esc(e.message) + '</p>';
@@ -903,32 +844,27 @@ function startPlainform() {
       '</div>';
     const dismiss = $('aiDismiss'); if (dismiss) dismiss.addEventListener('click', () => { aiBody.querySelector('.ai-card').remove(); });
     const apply = $('aiApply');
-    if (apply) apply.addEventListener('click', () => withLock(async () => {
+    if (apply) apply.addEventListener('click', async () => {
       await DocumentAdapter.replaceSelection(result.rewrite, tracked());
       logAudit('AI rewrite', passage.slice(0, 40) + '…', '(rewritten)', tracked() ? 'applied (tracked)' : 'applied');
       aiBody.innerHTML = '<p class="ai-hint">Applied. Select another paragraph to review more.</p>';
       await scan();
-    }));
+    });
   }
 
   clearHlBtn.addEventListener('click', async () => { await DocumentAdapter.clearMarks(); setStatus('', 'Marks cleared.'); });
 
-  /* ---------- tabs: Editor / AI / Help ---------- */
-  const tabEditor = $('tabEditor'), tabAI = $('tabAI'), tabHelp = $('tabHelp'),
-        editorPanel = $('editorPanel'), aiPanel = $('aiPanel'), helpPanel = $('helpPanel');
+  /* ---------- tabs: Editor / Help ---------- */
+  const tabEditor = $('tabEditor'), tabHelp = $('tabHelp'),
+        editorPanel = $('editorPanel'), helpPanel = $('helpPanel');
   function showTab(which) {
-    tabEditor.setAttribute('aria-selected', which === 'editor' ? 'true' : 'false');
-    tabAI.setAttribute('aria-selected', which === 'ai' ? 'true' : 'false');
-    tabHelp.setAttribute('aria-selected', which === 'help' ? 'true' : 'false');
-    // 'flex', not '' — both panels need to stay flex containers so their
-    // internal .scroll area gets a bounded, scrollable height. See the note
-    // in startPlainform() about why this matters.
-    editorPanel.style.display = which === 'editor' ? 'flex' : 'none';
-    aiPanel.style.display = which === 'ai' ? 'flex' : 'none';
-    helpPanel.style.display = which === 'help' ? '' : 'none';
+    const ed = which === 'editor';
+    tabEditor.setAttribute('aria-selected', ed ? 'true' : 'false');
+    tabHelp.setAttribute('aria-selected', ed ? 'false' : 'true');
+    editorPanel.style.display = ed ? '' : 'none';
+    helpPanel.style.display = ed ? 'none' : '';
   }
   tabEditor.addEventListener('click', () => showTab('editor'));
-  tabAI.addEventListener('click', () => showTab('ai'));
   tabHelp.addEventListener('click', () => showTab('help'));
 
   /* ---------- theme ---------- */
