@@ -74,60 +74,87 @@ const DocumentAdapter = (function () {
 
   const COMMENT_TAG = 'Plainform — ';   // prefix so we can find & clear our own comments
 
+  // Groups marks by the exact text to search for (the whole sentence for a
+  // "long sentence" flag; the word/phrase otherwise). Pure data — no Word
+  // API calls — so it's safe to build once and reuse across separate
+  // Word.run passes, which each need their own fresh search results.
+  function buildMarkGroups(markList) {
+    const groups = {};
+    markList.forEach(mk => {
+      const ht = mk.highlightText || mk.from;
+      (groups[ht] = groups[ht] || { text: ht, kind: mk.kind, marks: [] }).marks.push(mk);
+    });
+    return groups;
+  }
+
+  // Searches the document for every group, inside whichever Word.run context
+  // is passed in. Must be called fresh inside each Word.run — Range results
+  // from one context can't be reused in another.
+  async function searchMarkGroups(context, groups) {
+    const searches = [];
+    Object.keys(groups).forEach(key => {
+      const g = groups[key];
+      // Word search caps around 255 chars and matchWholeWord fails on strings
+      // containing punctuation, so for long/sentence text we search plainly
+      // and trim to a safe length.
+      const isLong = g.text.length > 120;
+      const term = isLong ? g.text.slice(0, 200) : g.text;
+      const opts = isLong ? {} : { matchCase: true, matchWholeWord: true };
+      let r;
+      try { r = context.document.body.search(term, opts); r.load('items'); }
+      catch (e) { r = null; }
+      searches.push({ g, results: r });
+    });
+    await context.sync();
+    return searches;
+  }
+
   // Paint soft underlines for every mark. If withComments is true, also attach
   // a Word comment carrying the issue + recommended change, so hovering/clicking
   // the word in the document shows the explanation in Word's own bubble.
   async function markup(markList, withComments) {
-    // Highlights first — the widely-supported, must-always-work part.
+    const groups = buildMarkGroups(markList);
+
+    // PASS 1 — colour every mark. This is the "must always work" part: if
+    // anything later fails, the colours applied here must still be visible.
     await Word.run(async (context) => {
       clearHighlightsIn(context.document.body);
-
-      // Group by the text we actually HIGHLIGHT (full sentence for sentence
-      // flags; the word/phrase otherwise). Each group remembers its colour and
-      // a fallback string for when a long search fails.
-      const groups = {};
-      markList.forEach(mk => {
-        const ht = mk.highlightText || mk.from;
-        const key = ht;
-        (groups[key] = groups[key] || { text: ht, kind: mk.kind, marks: [], fallback: mk.from }).marks.push(mk);
-      });
-
-      const searches = [];
-      Object.keys(groups).forEach(key => {
-        const g = groups[key];
-        // Word search caps around 255 chars and matchWholeWord fails on strings
-        // containing punctuation, so for long/sentence text we search plainly
-        // and trim to a safe length.
-        const isLong = g.text.length > 120;
-        const term = isLong ? g.text.slice(0, 200) : g.text;
-        const opts = isLong ? {} : { matchCase: true, matchWholeWord: true };
-        let r;
-        try { r = context.document.body.search(term, opts); r.load('items'); }
-        catch (e) { r = null; }
-        searches.push({ g, results: r });
-      });
-      await context.sync();
-
+      const searches = await searchMarkGroups(context, groups);
       searches.forEach(({ g, results }) => {
         if (!results) return;
-        // For a full-sentence highlight there's one match per occurrence order;
-        // colour each mark's occurrence-th hit.
         g.marks.forEach(mk => {
           const idx = mk.occurrence < results.items.length ? mk.occurrence : 0;
           if (results.items.length > idx) {
-            const r = results.items[idx];
-            r.font.highlightColor = HL[mk.kind] || HL.flag;
-            // Strip underline on JUST this marked word/phrase — not the whole
-            // document. This is what actually removes the underlined look on
-            // flagged text (e.g. if the word happened to be a hyperlink or
-            // other underlined formatting already in the document), without
-            // touching underline formatting anywhere Plainform hasn't marked.
-            r.font.underline = 'None';
+            results.items[idx].font.highlightColor = HL[mk.kind] || HL.flag;
           }
         });
       });
       await context.sync();
     });
+
+    // PASS 2 — strip underline from the same marked ranges, as its OWN
+    // separate, fully-guarded pass. This touches a wider variety of range
+    // shapes (including whole sentences), so it's more likely than the
+    // colouring above to hit a Word-version quirk. If it fails, we swallow
+    // the error here — the colours from Pass 1 are already applied and are
+    // completely unaffected either way.
+    try {
+      await Word.run(async (context) => {
+        const searches = await searchMarkGroups(context, groups);
+        searches.forEach(({ g, results }) => {
+          if (!results) return;
+          g.marks.forEach(mk => {
+            const idx = mk.occurrence < results.items.length ? mk.occurrence : 0;
+            if (results.items.length > idx) {
+              results.items[idx].font.underline = 'None';
+            }
+          });
+        });
+        await context.sync();
+      });
+    } catch (e) {
+      console.error('underline-clear pass skipped (highlight colours still applied):', e);
+    }
 
     // Comments second, in a SEPARATE, fully-guarded pass. The comment APIs
     // (getComments / insertComment / contentRange) are newer and may be missing;
