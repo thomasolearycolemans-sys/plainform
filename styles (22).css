@@ -1,0 +1,337 @@
+/* ==========================================================================
+   Plainform — stylesheet
+   Extracted from taskpane.html so CSS can be cache-busted and edited
+   independently of markup/script. Bump the ?v= query param on the <link>
+   tag in taskpane.html whenever this file changes — Word's task pane
+   caches assets aggressively.
+   ========================================================================== */
+
+:root {
+  --ink: #1a1f24; --ink-soft: #586470; --paper: #f6f4ef; --panel: #ffffff;
+  --line: #d9d4c9; --rule: #e8e4db; --gov: #0b3d59; --gov-soft: #e6eef3;
+  --gov-hover: #0d4a6b; --apply: #1f6b4a; --apply-bg: #e7f1ec; --suggest: #8a5e00;
+  --suggest-bg: #faf0d7; --flag: #93724a; --flag-bg: #f1ece3; --au: #5b3a8a; --au-bg: #ece4f5;
+  --focus: #0b6fa8; --ring: rgba(11,111,168,.35); --subtle: #fbfaf7;
+  --shadow: 0 1px 2px rgba(26,31,36,.04), 0 8px 24px rgba(26,31,36,.05); --strike: #c4a0a0;
+  --passive: #2b6cb0; --passive-bg: #e2eef7;
+  --mono: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  --sans: "Segoe UI", -apple-system, BlinkMacSystemFont, "Inter", Roboto, sans-serif;
+  --serif: "Spectral", Georgia, "Times New Roman", serif;
+}
+
+/* Explicit override (via JS-toggled data-theme) always wins */
+[data-theme="dark"] {
+  --ink: #e9e7e2; --ink-soft: #a3acb6; --paper: #15191d; --panel: #1e242a;
+  --line: #353d45; --rule: #2b323a; --gov: #6cbce8; --gov-soft: #1f3340;
+  --gov-hover: #7cc6ef; --apply: #63c693; --apply-bg: #18302440; --suggest: #e0b04a;
+  --suggest-bg: #38291040; --flag: #c2a888; --flag-bg: #2c261d40; --au: #bb9fe8; --au-bg: #2719382f;
+  --focus: #6cbce8; --ring: rgba(108,188,232,.4); --subtle: #232a30; --strike: #8a7a6a;
+  --passive: #6cbce8; --passive-bg: #1f3340;
+}
+
+/* OS-level fallback: respected only when the page hasn't been given an
+   explicit data-theme yet (first paint, before JS runs, or if JS fails). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --ink: #e9e7e2; --ink-soft: #a3acb6; --paper: #15191d; --panel: #1e242a;
+    --line: #353d45; --rule: #2b323a; --gov: #6cbce8; --gov-soft: #1f3340;
+    --gov-hover: #7cc6ef; --apply: #63c693; --apply-bg: #18302440; --suggest: #e0b04a;
+    --suggest-bg: #38291040; --flag: #c2a888; --flag-bg: #2c261d40; --au: #bb9fe8; --au-bg: #2719382f;
+    --focus: #6cbce8; --ring: rgba(108,188,232,.4); --subtle: #232a30; --strike: #8a7a6a;
+    --passive: #6cbce8; --passive-bg: #1f3340;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: var(--sans); color: var(--ink); background: var(--panel);
+  line-height: 1.5; -webkit-font-smoothing: antialiased;
+  display: flex; flex-direction: column; height: 100vh;
+}
+
+/* -------------------------------------------------------------------- */
+/* Visibility utility — replaces inline style="display:none" toggling.
+   JS should add/remove `.is-hidden` rather than touching element.style. */
+/* -------------------------------------------------------------------- */
+.is-hidden { display: none !important; }
+
+/* -------------------------------------------------------------------- */
+/* Header */
+/* -------------------------------------------------------------------- */
+.pane-head { border-bottom: 1px solid var(--rule); padding: 13px 16px 11px; display: flex; align-items: flex-start; gap: 10px; }
+.pane-mark {
+  font-family: var(--serif); font-weight: 600; font-size: 18px; line-height: 1; color: #fff;
+  background: var(--gov); width: 32px; height: 32px; border-radius: 8px;
+  display: grid; place-items: center; flex-shrink: 0; margin-top: 1px;
+}
+.pane-title h1 { font-family: var(--serif); font-size: 16px; font-weight: 600; margin: 0; }
+.pane-title p { font-size: 11px; color: var(--ink-soft); margin: 2px 0 0; line-height: 1.4; }
+.pane-theme {
+  margin-left: auto; border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft);
+  width: 30px; height: 30px; border-radius: 7px; cursor: pointer; font-size: 14px; flex-shrink: 0;
+}
+.pane-theme:hover { border-color: var(--ink-soft); color: var(--ink); }
+.pane-theme:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+
+/* -------------------------------------------------------------------- */
+/* Boot / connection status */
+/* -------------------------------------------------------------------- */
+.boot { padding: 10px 16px; font-size: 11.5px; color: var(--ink-soft); background: var(--gov-soft); border-bottom: 1px solid var(--rule); }
+.boot.err { color: #8a2b2b; background: #f7e9e9; }
+
+/* -------------------------------------------------------------------- */
+/* Tabs */
+/* -------------------------------------------------------------------- */
+.tabs-row { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--rule); background: var(--subtle); }
+.tab {
+  font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 10px 14px; border: none;
+  background: transparent; color: var(--ink-soft); cursor: pointer; border-bottom: 2px solid transparent;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--gov); border-bottom-color: var(--gov); }
+.tab:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); border-radius: 6px; }
+
+/* -------------------------------------------------------------------- */
+/* Controls (toggles, scan button, action row) */
+/* -------------------------------------------------------------------- */
+.controls { padding: 12px 16px; border-bottom: 1px solid var(--rule); }
+.ctl-row { display: flex; align-items: center; gap: 10px; }
+.toggle { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-size: 13px; color: var(--ink); user-select: none; }
+
+.switch { position: relative; width: 38px; height: 22px; flex-shrink: 0; }
+.switch input {
+  position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer;
+}
+.switch .track { position: absolute; inset: 0; background: var(--line); border-radius: 22px; transition: background .15s; }
+.switch .knob {
+  position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #fff;
+  border-radius: 50%; transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.25);
+}
+.switch input:checked + .track { background: var(--gov); }
+.switch input:checked + .track + .knob { transform: translateX(16px); }
+.switch input:focus-visible + .track { box-shadow: 0 0 0 3px var(--ring); }
+
+.ctl-hint { font-size: 11px; color: var(--ink-soft); margin: 7px 0 0; line-height: 1.45; }
+
+.scan-btn {
+  margin-left: auto; font-family: var(--sans); font-size: 12.5px; font-weight: 500; padding: 7px 13px;
+  border-radius: 7px; border: 1px solid var(--gov); background: var(--gov); color: #fff; cursor: pointer; white-space: nowrap;
+}
+.scan-btn:hover { background: var(--gov-hover); }
+.scan-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+
+.ctl-row2 { display: flex; align-items: center; gap: 14px; margin-top: 11px; flex-wrap: wrap; }
+.btn-row { display: flex; gap: 7px; margin-top: 11px; flex-wrap: wrap; }
+.hl-btn {
+  font-family: var(--sans); font-size: 11.5px; padding: 5px 10px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft); cursor: pointer;
+}
+.hl-btn:hover { border-color: var(--ink-soft); color: var(--ink); }
+.hl-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+
+/* -------------------------------------------------------------------- */
+/* Legend */
+/* -------------------------------------------------------------------- */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 9px 16px; border-bottom: 1px solid var(--rule);
+  background: var(--subtle); font-size: 10.5px; color: var(--ink-soft);
+}
+.legend .leg { display: inline-flex; align-items: center; gap: 5px; }
+.legend .sw { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+.legend .sw.swap  { background: #7fd8d8; }
+.legend .sw.spell { background: #fff07a; }
+.legend .sw.flag  { background: #a6e59a; }
+
+/* -------------------------------------------------------------------- */
+/* Live status line */
+/* -------------------------------------------------------------------- */
+.status {
+  padding: 9px 16px; font-size: 11.5px; color: var(--ink-soft); border-bottom: 1px solid var(--rule);
+  background: var(--subtle); display: flex; align-items: center; gap: 7px; min-height: 36px;
+}
+.status .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-soft); flex-shrink: 0; transition: background .2s; }
+.status.scanning .live-dot { background: var(--suggest); animation: pulse 1s infinite; }
+.status.clean .live-dot { background: var(--apply); }
+.status.found .live-dot { background: var(--suggest); }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+/* -------------------------------------------------------------------- */
+/* Scrollable panel body
+   #editorPanel / #aiPanel are flex containers (set via class, not inline
+   style) so .scroll below gets a bounded, scrollable height. Without this,
+   content grows forever and pushes the footer off-screen. */
+/* -------------------------------------------------------------------- */
+.panel-flex { display: flex; flex: 1; min-height: 0; flex-direction: column; }
+.scroll { flex: 1; overflow-y: auto; }
+
+/* -------------------------------------------------------------------- */
+/* Apply-all bar */
+/* -------------------------------------------------------------------- */
+.applyall-bar { padding: 9px 16px; border-bottom: 1px solid var(--rule); display: flex; }
+.applyall {
+  font-family: var(--sans); font-size: 12.5px; font-weight: 600; padding: 8px 14px; border-radius: 7px;
+  border: 1px solid var(--apply); background: var(--apply); color: #fff; cursor: pointer; width: 100%;
+}
+.applyall:hover { filter: brightness(1.06); }
+.applyall:disabled { opacity: .6; cursor: default; }
+.applyall:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+
+/* -------------------------------------------------------------------- */
+/* Suggestion list */
+/* -------------------------------------------------------------------- */
+.sug-list, .flag-list { list-style: none; margin: 0; padding: 4px 0 8px; }
+.sug { padding: 12px 16px; border-bottom: 1px solid var(--rule); }
+.sug:hover { background: var(--subtle); }
+
+.cat-tag {
+  font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .04em;
+  padding: 2px 6px; border-radius: 4px; margin-right: 8px; vertical-align: 2px;
+}
+.cat-tag.swap { background: var(--apply-bg); color: var(--apply); }
+.cat-tag.spell { background: var(--au-bg); color: var(--au); }
+
+.sug-change { font-family: var(--serif); font-size: 15px; line-height: 1.5; }
+.sug-from { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--strike); }
+.sug-arrow { color: var(--ink-soft); margin: 0 8px; }
+.sug-to { color: var(--apply); font-weight: 600; }
+.sug-note { font-size: 11.5px; color: var(--ink-soft); margin: 5px 0 0; line-height: 1.45; }
+
+.sug-acts, .flag-acts { display: flex; gap: 7px; margin-top: 10px; align-items: center; }
+.alt-pick { margin-right: auto; display: flex; gap: 5px; flex-wrap: wrap; }
+
+.chip {
+  font-family: var(--sans); font-size: 11px; padding: 3px 9px; border-radius: 20px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft); cursor: pointer;
+}
+.chip:hover { border-color: var(--apply); color: var(--apply); }
+.chip[aria-pressed="true"] { background: var(--apply-bg); border-color: var(--apply); color: var(--apply); font-weight: 600; }
+.chip:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+
+.mini {
+  font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink-soft); cursor: pointer;
+}
+.mini:hover { border-color: var(--ink-soft); color: var(--ink); }
+.mini:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+.mini.apply { background: var(--apply); border-color: var(--apply); color: #fff; }
+.mini.apply:hover { filter: brightness(1.06); }
+
+/* -------------------------------------------------------------------- */
+/* "Needs your judgement" flagged-issues section */
+/* -------------------------------------------------------------------- */
+.flag-section { border-top: 8px solid var(--subtle); }
+.flag-head {
+  padding: 11px 16px 4px; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--ink-soft);
+}
+.flag-head .sub {
+  display: block; font-family: var(--sans); text-transform: none; letter-spacing: 0;
+  font-size: 11px; margin-top: 3px; color: var(--ink-soft);
+}
+.flag-item { padding: 11px 16px; border-bottom: 1px solid var(--rule); }
+.flag-top { display: flex; align-items: center; gap: 8px; }
+
+.flag-kind {
+  font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .04em;
+  padding: 2px 6px; border-radius: 4px; background: var(--flag-bg); color: var(--flag); white-space: nowrap;
+}
+/* Consolidated: one semantic pair (--passive/--passive-bg) driven per-theme
+   above, instead of repeating this compound selector under [data-theme="dark"]. */
+.flag-kind.passive, .flag-kind.sentence { background: var(--passive-bg); color: var(--passive); }
+.flag-kind.acronym { background: var(--suggest-bg); color: var(--suggest); }
+
+.flag-text { font-family: var(--serif); font-size: 13.5px; color: var(--ink); }
+.flag-why { font-size: 11.5px; color: var(--ink-soft); margin: 6px 0 0; line-height: 1.45; }
+
+/* -------------------------------------------------------------------- */
+/* Empty state */
+/* -------------------------------------------------------------------- */
+.empty { padding: 34px 22px; text-align: center; color: var(--ink-soft); }
+.empty .big { font-family: var(--serif); font-size: 15px; color: var(--ink-soft); margin: 0 0 5px; }
+.empty .sub { font-size: 12.5px; margin: 0; line-height: 1.5; }
+
+/* -------------------------------------------------------------------- */
+/* Help panel */
+/* -------------------------------------------------------------------- */
+.help { padding: 18px 18px 30px; overflow-y: auto; }
+.help h2 { font-family: var(--serif); font-size: 18px; margin: 0 0 8px; color: var(--ink); }
+.help h3 { font-family: var(--serif); font-size: 14.5px; margin: 20px 0 8px; color: var(--ink); }
+.help p { font-size: 12.5px; line-height: 1.6; color: var(--ink-soft); margin: 0 0 10px; }
+.help ul { font-size: 12.5px; line-height: 1.55; color: var(--ink-soft); padding-left: 18px; margin: 0 0 10px; }
+.help li { margin: 5px 0; }
+.help .hl-mark { font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+.help .hl-mark.swap { background: #d6f5f5; color: #1a6b6b; }
+.help .hl-mark.spell { background: #fff7d6; color: #8a6d0c; }
+.help .hl-mark.flag { background: #e2f5df; color: #2f7a2f; }
+.help .note {
+  font-size: 12px; line-height: 1.55; background: var(--gov-soft); border-left: 3px solid var(--gov);
+  border-radius: 0 6px 6px 0; padding: 10px 13px; color: var(--ink); margin: 0 0 10px;
+}
+.help b { color: var(--ink); }
+.help .contact { margin-top: 16px; font-size: 11px; }
+
+/* -------------------------------------------------------------------- */
+/* AI assistant + consent */
+/* -------------------------------------------------------------------- */
+.ai-consent {
+  margin-top: 11px; padding: 11px 12px; border: 1px solid var(--suggest);
+  background: var(--suggest-bg); border-radius: 8px;
+}
+.ai-consent p { font-size: 11.5px; line-height: 1.5; margin: 0 0 7px; color: var(--ink); }
+.ai-consent p:last-of-type { margin-bottom: 9px; }
+.consent-acts { display: flex; gap: 7px; justify-content: flex-end; }
+
+.ai-section { border-top: 8px solid var(--subtle); }
+.ai-head {
+  padding: 11px 16px 4px; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--gov);
+}
+.ai-head .sub {
+  display: block; font-family: var(--sans); text-transform: none; letter-spacing: 0;
+  font-size: 11px; margin-top: 3px; color: var(--ink-soft);
+}
+.ai-controls { padding: 8px 16px 4px; }
+.ai-review {
+  font-family: var(--sans); font-size: 12.5px; font-weight: 600; padding: 8px 14px; border-radius: 7px;
+  border: 1px solid var(--gov); background: var(--gov); color: #fff; cursor: pointer; width: 100%;
+}
+.ai-review:hover { background: var(--gov-hover); }
+.ai-review:disabled { opacity: .6; cursor: default; }
+.ai-review:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+
+.ai-body { padding: 6px 16px 14px; }
+.ai-hint { font-size: 12px; color: var(--ink-soft); line-height: 1.5; margin: 6px 0; }
+.ai-note {
+  font-size: 11px; color: var(--suggest); background: var(--suggest-bg); border-radius: 6px;
+  padding: 7px 9px; margin: 6px 0 10px; line-height: 1.45;
+}
+
+/* Error state for a failed AI/relay call — markup contract lives in HTML
+   (see #aiError in taskpane.html) even though JS controls its content. */
+.ai-error {
+  font-size: 11.5px; color: #8a2b2b; background: #f7e9e9; border-radius: 6px;
+  padding: 9px 10px; margin: 6px 0 10px; line-height: 1.5;
+}
+[data-theme="dark"] .ai-error { color: #f0b4b4; background: #3a1f1f; }
+
+.ai-loading { font-size: 12px; color: var(--ink-soft); padding: 10px 0; display: flex; align-items: center; gap: 8px; }
+
+.ai-card { border: 1px solid var(--rule); border-radius: 8px; padding: 11px 12px; background: var(--subtle); }
+.ai-label {
+  font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--gov); margin-bottom: 5px;
+}
+.ai-rewrite { font-family: var(--serif); font-size: 14px; line-height: 1.55; color: var(--ink); }
+.ai-reason { font-size: 11.5px; color: var(--ink-soft); margin: 7px 0 0; line-height: 1.45; font-style: italic; }
+.ai-acts { display: flex; gap: 7px; margin-top: 10px; justify-content: flex-end; }
+
+/* -------------------------------------------------------------------- */
+/* Footer */
+/* -------------------------------------------------------------------- */
+.pane-foot { border-top: 1px solid var(--rule); padding: 9px 16px; font-size: 10.5px; color: var(--ink-soft); line-height: 1.5; background: var(--subtle); }
+.pane-foot b { color: var(--ink); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
